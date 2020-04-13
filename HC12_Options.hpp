@@ -124,14 +124,14 @@ enum Channel {  // available channel, each 400KHz higher
 };
 
 enum TransmissionPowerMode {
-    P1 = 1,
-    P2 = 2,
-    P3 = 3,
-    P4 = 4,
-    P5 = 5,
-    P6 = 6,
-    P7 = 7,
-    P8 = 8,
+    P1 = 1,     // -1 dBm
+    P2 = 2,     //  2 dBm
+    P3 = 3,     //  5 dBm
+    P4 = 4,     //  8 dBm
+    P5 = 5,     // 11 dBm
+    P6 = 6,     // 14 dBm
+    P7 = 7,     // 17 dBm
+    P8 = 8,     // 20 dBm
 };
 
 #endif //SPORTBUZZER_HC12_OPTIONS_HPP
