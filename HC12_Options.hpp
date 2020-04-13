@@ -9,7 +9,7 @@
 #define SPORTBUZZER_HC12_OPTIONS_HPP
 
 
-enum BaudRate {     // available baud rates. Higher baud rate reduces the range in which the module works
+enum Baud {     // available baud rates. Higher baud rate reduces the range in which the module works
     B1200 = 1200,
     B2400 = 2400,
     B4800 = 4800,

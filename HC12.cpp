@@ -7,8 +7,6 @@
 
 HC12::HC12(const int rxPin, const int txPin, const int setPin)
         : rxPin(rxPin), txPin(txPin), setPin(setPin), softwareSerial(SoftwareSerial(rxPin, txPin)) {
-    softwareSerial.begin(9600);
-
     pinMode(setPin, OUTPUT);
 }
 
@@ -26,9 +24,7 @@ bool HC12::operation(const String &command) {
     softwareSerial.flush();
     softwareSerial.println(command);
 
-    delay(25);
-
-    Serial.print(softwareSerial.readString());
+    delay(50);
 
     return wasOperationSuccessful();
 }
@@ -37,8 +33,8 @@ bool HC12::wasOperationSuccessful() {
     return softwareSerial.available() && softwareSerial.readString().substring(0, 2) == "OK";
 }
 
-bool HC12::setBaudRate(BaudRate baudRate) {
-    return operation("AT+B" + String(baudRate));
+bool HC12::setTransmissionBaud(Baud baud) {
+    return operation("AT+B" + String(baud));
 }
 
 bool HC12::setChannel(Channel channel) {
@@ -87,5 +83,21 @@ template<typename Func>
 void HC12::data(Func writeCallback) {
     digitalWrite(setPin, HIGH);
     writeCallback();
+}
+
+void HC12::start(Baud baudRate) {
+    softwareSerial.begin(baudRate);
+}
+
+void HC12::end() {
+    softwareSerial.end();
+}
+
+int HC12::available() {
+    return softwareSerial.available();
+}
+
+int HC12::read() {
+    return softwareSerial.read();
 }
 

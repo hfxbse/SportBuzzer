@@ -14,12 +14,15 @@ public:
 
     virtual ~HC12();
 
+    void start(Baud baudRate);
+    void end();
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 
     bool test();
 
-    bool setBaudRate(BaudRate baudRate = B9600);
+    bool setTransmissionBaud(Baud baud = B9600);
     bool setChannel(Channel channel = C001);
     bool setTransmissionPower(TransmissionPowerMode powerMode);
     bool restoreDefaults();
@@ -28,6 +31,9 @@ public:
     void write(const char *str);
     void write(uint8_t *buffer, size_t size);
     void write(const char *buffer, size_t size);
+
+    int available();
+    int read();
 
 #pragma clang diagnostic pop
 
