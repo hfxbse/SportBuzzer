@@ -7,7 +7,7 @@ set(PROJECT_NAME SportBuzzer)
 
 project(${PROJECT_NAME} CXX)
 
-add_executable(${PROJECT_NAME} sport_buzzer.cpp HC12.cpp HC12.hpp HC12_Options.hpp)
+add_executable(${PROJECT_NAME} sport_buzzer.cpp HC12.cpp HC12.hpp HC12_Options.hpp sport_buzzer.hpp)
 
 # Arduino.h is included in hello_world.cpp, so link with Arduino core
 target_link_arduino_libraries(${PROJECT_NAME} PRIVATE core)
