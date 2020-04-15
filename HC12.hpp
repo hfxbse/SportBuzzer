@@ -6,11 +6,17 @@
 #define SPORTBUZZER_HC12_HPP
 
 #include <SoftwareSerial.h>
+#include <Arduino.h>
 #include "HC12_Options.hpp"
 
 class HC12 {
 public:
-    HC12(int rxPin, int txPin, int setPin);
+    HC12(int rxPin, int txPin, int setPin /* requires pull-down resistor */);
+    HC12(const HC12 &) = delete;
+    HC12(HC12 &&) = delete;
+
+    HC12& operator=(const HC12 &) = delete;
+    HC12& operator=(HC12 &&) = delete;
 
     virtual ~HC12();
 
@@ -33,7 +39,11 @@ public:
     void write(const char *buffer, size_t size);
 
     int available();
+
     int read();
+    String readString();
+
+    void flush();
 
 #pragma clang diagnostic pop
 
@@ -45,7 +55,7 @@ private:
     template<typename Func>
     void data(Func writeCallback);
 
-    bool operation(const String &command);
+    bool operation(const String &command, unsigned delayDuration = 50);
 
     bool wasOperationSuccessful();
 };

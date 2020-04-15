@@ -2,7 +2,6 @@
 // Created by stubit on 4/13/20.
 //
 
-#include <USBAPI.h>
 #include "HC12.hpp"
 
 HC12::HC12(const int rxPin, const int txPin, const int setPin)
@@ -18,19 +17,19 @@ bool HC12::test() {
     return operation("AT");
 }
 
-bool HC12::operation(const String &command) {
+bool HC12::operation(const String &command, unsigned delayDuration) {
     digitalWrite(setPin, LOW);
 
     softwareSerial.flush();
-    softwareSerial.println(command);
+    softwareSerial.print(command);
 
-    delay(50);
+    delay(delayDuration);
 
     return wasOperationSuccessful();
 }
 
 bool HC12::wasOperationSuccessful() {
-    return softwareSerial.available() && softwareSerial.readString().substring(0, 2) == "OK";
+    return softwareSerial.available() && softwareSerial.readString().substring(0, 2).equals("OK");
 }
 
 bool HC12::setTransmissionBaud(Baud baud) {
@@ -52,7 +51,7 @@ bool HC12::setTransmissionPower(TransmissionPowerMode powerMode) {
 }
 
 bool HC12::restoreDefaults() {
-    return operation("AT+DEFAULT");
+    return operation("AT+DEFAULT", 75);
 }
 
 void HC12::write(uint8_t byte) {
@@ -94,10 +93,36 @@ void HC12::end() {
 }
 
 int HC12::available() {
-    return softwareSerial.available();
+    int available;
+
+    data([this, &available] {
+        available = softwareSerial.available();
+    });
+
+    return available;
 }
 
 int HC12::read() {
-    return softwareSerial.read();
+    int read;
+
+    data([this, &read]() {
+        read = softwareSerial.read();
+    });
+
+    return read;
+}
+
+String HC12::readString() {
+    String read;
+
+    data([this, &read]() {
+        read = softwareSerial.readString();
+    });
+
+    return read;
+}
+
+void HC12::flush() {
+    softwareSerial.flush();
 }
 
