@@ -23,15 +23,15 @@ public:
     void start(Baud baudRate);
     void end();
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-
     bool test();
 
     bool setTransmissionBaud(Baud baud = B9600);
     bool setChannel(Channel channel = C001);
     bool setTransmissionPower(TransmissionPowerMode powerMode);
     bool restoreDefaults();
+
+    void print(const char *str);
+    void print(const String &string);
 
     void write(uint8_t byte);
     void write(const char *str);
@@ -41,11 +41,7 @@ public:
     int available();
 
     int read();
-    String readString();
-
     void flush();
-
-#pragma clang diagnostic pop
 
 private:
     const int rxPin, txPin, setPin;

@@ -6,11 +6,14 @@
 #define SPORTBUZZER_SPORT_BUZZER_HPP
 
 #include "HC12.hpp"
+#include "Transmissions.hpp"
 
 void checkHC12Result(bool result, const String &msg);
 
-void testHC12(HC12 &module, const String& debugName);
+void testHC12(const String& debugName);
 
-void restoreHC12Defaults(HC12 &module, const String &debugName);
+void setupHC12(const String &debugName);
+
+void handlePingSignals(Transmissions &transmissions);
 
 #endif //SPORTBUZZER_SPORT_BUZZER_HPP

@@ -5,7 +5,12 @@ set(CMAKE_TOOLCHAIN_FILE "Arduino-CMake-Toolchain/Arduino-toolchain.cmake")
 set(PROJECT_NAME SportBuzzer)
 project(${PROJECT_NAME} CXX)
 
-add_executable(${PROJECT_NAME} sport_buzzer.cpp HC12.cpp HC12.hpp HC12_Options.hpp sport_buzzer.hpp)
+add_executable(
+        ${PROJECT_NAME}
+        sport_buzzer.cpp sport_buzzer.hpp
+        HC12.cpp HC12.hpp HC12_Options.hpp
+        Transmissions.cpp Transmissions.hpp
+)
 
 target_link_arduino_libraries(${PROJECT_NAME} PRIVATE SoftwareSerial core)
 

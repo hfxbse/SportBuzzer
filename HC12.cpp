@@ -20,7 +20,7 @@ bool HC12::test() {
 bool HC12::operation(const String &command, unsigned delayDuration) {
     digitalWrite(setPin, LOW);
 
-    softwareSerial.flush();
+    flush();
     softwareSerial.print(command);
 
     delay(delayDuration);
@@ -112,17 +112,19 @@ int HC12::read() {
     return read;
 }
 
-String HC12::readString() {
-    String read;
-
-    data([this, &read]() {
-        read = softwareSerial.readString();
-    });
-
-    return read;
-}
-
 void HC12::flush() {
     softwareSerial.flush();
+}
+
+void HC12::print(const char *str) {
+    data([this, &str] () {
+        softwareSerial.print(str);
+    });
+}
+
+void HC12::print(const String &string) {
+    data([this, &string] {
+        softwareSerial.print(string);
+    });
 }
 

@@ -1,46 +1,78 @@
 #include "sport_buzzer.hpp"
 
-#define HC12_1_TX_PIN 10
-#define HC12_1_RX_PIN 11
-#define HC12_1_SET_PIN 7
-#define HC12_1_DEBUG_NAME "HC12_1"
+#define HC12_TX_PIN 10
+#define HC12_RX_PIN 11
+#define HC12_SET_PIN 9
+#define HC12_DEBUG_NAME String("HC12")
 
-#define HC12_2_TX_PIN 8
-#define HC12_2_RX_PIN 9
-#define HC12_2_SET_PIN 6
-#define HC12_2_DEBUG_NAME "HC12_2"
+#define BUTTON 2
+#define TIMEOUT 10000
+
+HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
+
+volatile bool pingRequested = false;
+
+void setup() {
+    Serial.begin(9600);
+    hc12.start(B9600);
+
+    pinMode(BUTTON, INPUT_PULLUP);
+
+    attachInterrupt(digitalPinToInterrupt(BUTTON), []() {
+        pingRequested = true;
+    }, RISING);
+
+    testHC12(HC12_DEBUG_NAME);
+    setupHC12(HC12_DEBUG_NAME);
+}
+
+void loop() {
+    static Transmissions transmissions(hc12, HC12_DEBUG_NAME);
+
+    transmissions.poll();
+    handlePingSignals(transmissions);
+}
 
 void checkHC12Result(bool result, const String &msg) {
-    if(!result) {
+    if (!result) {
         Serial.println(msg);
     }
 }
 
-void testHC12(HC12 &module, const String& debugName) {
-    checkHC12Result(module.test(), "Unable to connect to " + debugName);
+void testHC12(const String &debugName) {
+    checkHC12Result(hc12.test(), "Unable to connect to " + debugName + ".");
 }
 
-void restoreHC12Defaults(HC12 &module, const String &debugName) {
-    checkHC12Result(module.restoreDefaults(), "Unable to restore defaults on " + debugName);
+void setupHC12(const String &debugName) {
+    checkHC12Result(hc12.restoreDefaults(), "Unable to restore defaults on " + debugName + ".");
+
+    Serial.println("Setup completed on " + debugName);
 }
 
-void setup() {
-    pinMode(HC12_1_SET_PIN, OUTPUT);
+void handlePingSignals(Transmissions &transmissions) {
+    static TransmissionStatus previousPingStatus = transmissions.getPingStatus();
 
-    HC12 hc12_1(HC12_1_TX_PIN, HC12_1_RX_PIN, HC12_1_SET_PIN);
-    HC12 hc12_2(HC12_2_TX_PIN, HC12_2_RX_PIN, HC12_2_SET_PIN);
+    if (transmissions.popReceivedPing()) {
+        transmissions.sendPingResponse();
+    }
 
-    Serial.begin(9600);
+    if (pingRequested) {
+        if (transmissions.sendPing(TIMEOUT)) {
+            pingRequested = false;
 
-    hc12_1.start(B9600);
-    testHC12(hc12_1, HC12_1_DEBUG_NAME);
-    restoreHC12Defaults(hc12_1, HC12_1_DEBUG_NAME);
-    hc12_1.end();
+            Serial.println("Sending ping on " + HC12_DEBUG_NAME + ".");
+        }
+    }
 
-    hc12_2.start(B9600);
-    testHC12(hc12_2, HC12_2_DEBUG_NAME);
-    restoreHC12Defaults(hc12_2, HC12_2_DEBUG_NAME);
-    hc12_2.end();
+    const TransmissionStatus pingStatus = transmissions.getPingStatus();
+    if (previousPingStatus != pingStatus) {
+        if (pingStatus == finished) {
+            Serial.println(
+                    "Ping on " + HC12_DEBUG_NAME + " took " + String(transmissions.getPingResponseTime()) + "ms.");
+        } else if (pingStatus == timeout) {
+            Serial.println("Ping timeout on " + HC12_DEBUG_NAME + ".");
+        }
+
+        previousPingStatus = pingStatus;
+    }
 }
-
-void loop() {}
