@@ -11,6 +11,7 @@
 enum Signal {
     ping = 1,
     pong = 2,
+    buzzer = 3,
 };
 
 enum TransmissionStatus {
@@ -26,18 +27,28 @@ public:
     void poll();
 
     bool sendPing(unsigned long timeout);
-    TransmissionStatus getPingStatus() const;
-    unsigned long getPingResponseTime() const;
+    TransmissionStatus getPingStatus();
+    unsigned long getPingResponseTime();
 
     unsigned long popReceivedPing();
     void sendPingResponse();
 
-private:
-    HC12 &module;
-    const String &debugName;
+    void waitOnPing();
 
+    void sendBuzzerSignal();
+    unsigned long getBuzzerReceiveTime() const;
+
+private:
+    // related to module
+    HC12 &module;
+    const String &moduleDebugName;
+
+    // related to ping signals
     unsigned long pingStart = 0, pingResponseTime = 0, receivedPingCount = 0, pingTimeout = 0;
     TransmissionStatus pingStatus = finished;
+
+    // related to buzzer signal
+    unsigned long buzzerTime = 0;
 };
 
 

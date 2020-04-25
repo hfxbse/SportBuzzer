@@ -16,4 +16,6 @@ void setupHC12(const String &debugName);
 
 void handlePingSignals(Transmissions &transmissions);
 
+unsigned long getPingDuration(Transmissions &transmissions);
+
 #endif //SPORTBUZZER_SPORT_BUZZER_HPP
