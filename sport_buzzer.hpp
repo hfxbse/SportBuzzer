@@ -5,7 +5,6 @@
 #ifndef SPORTBUZZER_SPORT_BUZZER_HPP
 #define SPORTBUZZER_SPORT_BUZZER_HPP
 
-#include "HC12.hpp"
 #include "Transmissions.hpp"
 
 void checkHC12Result(bool result, const String &msg);

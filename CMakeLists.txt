@@ -12,6 +12,8 @@ add_executable(
         Transmissions.cpp Transmissions.hpp
 )
 
+target_compile_options(${PROJECT_NAME} PUBLIC -Os)
+
 target_link_arduino_libraries(${PROJECT_NAME} PRIVATE SoftwareSerial core)
 
 target_enable_arduino_upload(${PROJECT_NAME})
