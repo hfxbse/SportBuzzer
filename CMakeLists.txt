@@ -7,7 +7,7 @@ project(${PROJECT_NAME} CXX)
 
 add_executable(
         ${PROJECT_NAME}
-        sport_buzzer.cpp sport_buzzer.hpp
+        sport_buzzer.cpp
         HC12.cpp HC12.hpp HC12_Options.hpp
         Transmissions.cpp Transmissions.hpp
 )

@@ -1,4 +1,4 @@
-#include "sport_buzzer.hpp"
+#include "Transmissions.hpp"
 
 #define HC12_TX_PIN 10
 #define HC12_RX_PIN 11
@@ -7,6 +7,16 @@
 
 #define BUTTON 2
 #define TIMEOUT 10000
+
+void checkHC12Result(bool result, const String &msg);
+
+void testHC12(const String& debugName);
+
+void setupHC12(const String &debugName);
+
+void handlePingSignals(Transmissions &transmissions);
+
+unsigned long getPingDuration(Transmissions &transmissions);
 
 HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
 
