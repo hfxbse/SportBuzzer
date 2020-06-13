@@ -37,6 +37,7 @@ public:
     void write(const char *str);
     void write(uint8_t *buffer, size_t size);
     void write(const char *buffer, size_t size);
+    void write(unsigned long value);
 
     int available();
 

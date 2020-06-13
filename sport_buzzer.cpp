@@ -43,6 +43,7 @@ void loop() {
     transmissions.poll();
     handlePingSignals(transmissions);
 
+    // region buzzer press handler
     static unsigned long oldReceiveTime = transmissions.getBuzzerReceiveTime();
     const unsigned long receiveTime = transmissions.getBuzzerReceiveTime();
 
@@ -53,9 +54,22 @@ void loop() {
 
     if(oldReceiveTime != receiveTime) {
         oldReceiveTime = receiveTime;
+        unsigned long duration = receiveTime - timerStart - getPingDuration(transmissions);
 
-        Serial.println("Duration: " + String(receiveTime - timerStart - getPingDuration(transmissions)) + "ms.");
+        Serial.println("Duration: " + String(duration) + "ms.");
+        transmissions.sendDuration(duration);
     }
+    // endregion
+
+    // region received duration
+    static unsigned long oldDurationNumber = transmissions.getDurationNumber();
+    const unsigned long durationNumber = transmissions.getDurationNumber();
+
+    if(oldDurationNumber != durationNumber) {
+        oldDurationNumber = durationNumber;
+        Serial.println("Received duration: " + String(transmissions.getTransmittedDuration()) + "ms.");
+    }
+    // endregion
 }
 
 void checkHC12Result(bool result, const String &msg) {

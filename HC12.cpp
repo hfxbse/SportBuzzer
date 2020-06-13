@@ -78,6 +78,14 @@ void HC12::write(const char *buffer, size_t size) {
     });
 }
 
+void HC12::write(unsigned long value) {
+    data([this, &value]() {
+        for(int i = 0; i < sizeof(unsigned long); ++i) {
+            softwareSerial.write(value >> (8u * (3 - i)));
+        }
+    });
+}
+
 template<typename Func>
 void HC12::data(Func writeCallback) {
     digitalWrite(setPin, HIGH);
