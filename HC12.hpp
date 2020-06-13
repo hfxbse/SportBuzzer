@@ -15,8 +15,8 @@ public:
     HC12(const HC12 &) = delete;
     HC12(HC12 &&) = delete;
 
-    HC12& operator=(const HC12 &) = delete;
-    HC12& operator=(HC12 &&) = delete;
+    HC12 &operator=(const HC12 &) = delete;
+    HC12 &operator=(HC12 &&) = delete;
 
     virtual ~HC12();
 

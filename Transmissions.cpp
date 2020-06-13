@@ -32,7 +32,7 @@ void Transmissions::poll() {
         } else {
             ++transmittedDurationBytes;
 
-            if(transmittedDurationBytes == 4) {
+            if (transmittedDurationBytes == 4) {
                 durationTransmissionStatus = finished;
                 ++receivedDurationCount;
             }
@@ -41,17 +41,17 @@ void Transmissions::poll() {
         }
     }
 
-    if(pingStatus == unfinished && millis() - pingStart > pingTimeout) {
+    if (pingStatus == unfinished && millis() - pingStart > pingTimeout) {
         pingStatus = timeout;
     }
 
-    if(millis() - durationTransmissionStart > transmissionTimeout) {
+    if (millis() - durationTransmissionStart > transmissionTimeout) {
         durationTransmissionStatus = timeout;
     }
 }
 
 bool Transmissions::sendPing(unsigned long timeout) {
-    if(pingStatus != unfinished) {
+    if (pingStatus != unfinished) {
         pingStatus = unfinished;
         Transmissions::pingTimeout = timeout;
 
@@ -75,7 +75,7 @@ unsigned long Transmissions::getPingResponseTime() {
 }
 
 unsigned long Transmissions::popReceivedPing() {
-    if(receivedPingCount) {
+    if (receivedPingCount) {
         return receivedPingCount--;
     }
 

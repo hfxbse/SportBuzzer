@@ -62,7 +62,7 @@ void HC12::write(uint8_t byte) {
 
 void HC12::write(const char *str) {
     data([this, str]() {
-       softwareSerial.write(str);
+        softwareSerial.write(str);
     });
 }
 
@@ -80,7 +80,7 @@ void HC12::write(const char *buffer, size_t size) {
 
 void HC12::write(unsigned long value) {
     data([this, &value]() {
-        for(int i = 0; i < sizeof(unsigned long); ++i) {
+        for (auto i = 0; i < sizeof(unsigned long); ++i) {
             softwareSerial.write(value >> (8u * (3 - i)));
         }
     });
@@ -125,7 +125,7 @@ void HC12::flush() {
 }
 
 void HC12::print(const char *str) {
-    data([this, &str] () {
+    data([this, &str]() {
         softwareSerial.print(str);
     });
 }

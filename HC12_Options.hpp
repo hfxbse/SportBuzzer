@@ -3,7 +3,7 @@
 //
 
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "UnusedGlobalDeclarationInspection"
 
 #ifndef SPORTBUZZER_HC12_OPTIONS_HPP
 #define SPORTBUZZER_HC12_OPTIONS_HPP
@@ -135,3 +135,5 @@ enum TransmissionPowerMode {
 };
 
 #endif //SPORTBUZZER_HC12_OPTIONS_HPP
+
+#pragma clang diagnostic pop
