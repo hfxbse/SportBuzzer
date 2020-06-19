@@ -26,23 +26,25 @@ namespace Buttons {
     }
 }
 
-void checkHC12Result(bool result, const String &msg);
+namespace Communication {
+    void checkHC12Result(bool result, const String &msg);
 
-void testHC12(const String &debugName);
+    void testHC12(const String &debugName);
 
-void setupHC12(const String &debugName);
+    void setupHC12(const String &debugName);
 
-void handlePingSignals(Transmissions &transmissions);
+    void handlePingSignals(Transmissions &transmissions);
 
-unsigned long getPingDuration(Transmissions &transmissions);
+    unsigned long getPingDuration(Transmissions &transmissions);
 
-HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
+    HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
+}
 
 volatile unsigned long timerStart = 0;
 
 void setup() {
     Serial.begin(9600);
-    hc12.start(B9600);
+    Communication::hc12.start(B9600);
 
     pinMode(BUTTON, INPUT_PULLUP);
 
@@ -50,8 +52,8 @@ void setup() {
         timerStart = millis();
     }, RISING);
 
-    testHC12(HC12_DEBUG_NAME);
-    setupHC12(HC12_DEBUG_NAME);
+    Communication::testHC12(HC12_DEBUG_NAME);
+    Communication::setupHC12(HC12_DEBUG_NAME);
 }
 
 void loop() {
@@ -76,11 +78,11 @@ void loop() {
         }
     });
 
-    static Transmissions transmissions(hc12, HC12_DEBUG_NAME);
+    static Transmissions transmissions(Communication::hc12, HC12_DEBUG_NAME);
     static unsigned long oldTimerStart = timerStart;
 
     transmissions.poll();
-    handlePingSignals(transmissions);
+    Communication::handlePingSignals(transmissions);
 
     // region buzzer press handler
     static unsigned long oldReceiveTime = transmissions.getBuzzerReceiveTime();
@@ -93,7 +95,7 @@ void loop() {
 
     if (oldReceiveTime != receiveTime) {
         oldReceiveTime = receiveTime;
-        unsigned long duration = receiveTime - timerStart - getPingDuration(transmissions);
+        unsigned long duration = receiveTime - timerStart - Communication::getPingDuration(transmissions);
 
         Serial.println("Duration: " + String(duration) + "ms.");
         transmissions.sendDuration(duration);
@@ -111,41 +113,45 @@ void loop() {
     // endregion
 }
 
-void checkHC12Result(bool result, const String &msg) {
-    if (!result) {
-        Serial.println(msg);
-    }
-}
-
-void testHC12(const String &debugName) {
-    checkHC12Result(hc12.test(), "Unable to connect to " + debugName + ".");
-}
-
-void setupHC12(const String &debugName) {
-    checkHC12Result(hc12.restoreDefaults(), "Unable to restore defaults on " + debugName + ".");
-
-    Serial.println("Setup completed on " + debugName);
-}
-
-void handlePingSignals(Transmissions &transmissions) {
-    if (transmissions.popReceivedPing()) {
-        transmissions.sendPingResponse();
-    }
-}
-
-unsigned long getPingDuration(Transmissions &transmissions) {
-    if (transmissions.sendPing(TIMEOUT)) {
-        Serial.println("Send ping on " + HC12_DEBUG_NAME + ".");
+namespace Communication {
+    void checkHC12Result(bool result, const String &msg) {
+        if (!result) {
+            Serial.println(msg);
+        }
     }
 
-    transmissions.waitOnPing();
-    TransmissionStatus pingStatus = transmissions.getPingStatus();
-
-    if (pingStatus == finished) {
-        Serial.println("Ping on " + HC12_DEBUG_NAME + " took " + String(transmissions.getPingResponseTime()) + "ms.");
-    } else if (pingStatus == timeout) {
-        Serial.println("Ping timeout on " + HC12_DEBUG_NAME + ".");
+    void testHC12(const String &debugName) {
+        Communication::checkHC12Result(hc12.test(), "Unable to connect to " + debugName + ".");
     }
 
-    return transmissions.getPingResponseTime();
+    void setupHC12(const String &debugName) {
+        checkHC12Result(hc12.restoreDefaults(), "Unable to restore defaults on " + debugName + ".");
+
+        Serial.println("Setup completed on " + debugName);
+    }
+
+    void handlePingSignals(Transmissions &transmissions) {
+        if (transmissions.popReceivedPing()) {
+            transmissions.sendPingResponse();
+        }
+    }
+
+    unsigned long getPingDuration(Transmissions &transmissions) {
+        if (transmissions.sendPing(TIMEOUT)) {
+            Serial.println("Send ping on " + HC12_DEBUG_NAME + ".");
+        }
+
+        transmissions.waitOnPing();
+        TransmissionStatus pingStatus = transmissions.getPingStatus();
+
+        if (pingStatus == finished) {
+            Serial.println(
+                    "Ping on " + HC12_DEBUG_NAME + " took " + String(transmissions.getPingResponseTime()) + "ms."
+            );
+        } else if (pingStatus == timeout) {
+            Serial.println("Ping timeout on " + HC12_DEBUG_NAME + ".");
+        }
+
+        return transmissions.getPingResponseTime();
+    }
 }
