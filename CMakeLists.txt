@@ -10,6 +10,7 @@ add_executable(
         sport_buzzer.cpp
         HC12.cpp HC12.hpp HC12_Options.hpp
         Transmissions.cpp Transmissions.hpp
+        Button.cpp Button.hpp
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)

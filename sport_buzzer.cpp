@@ -1,4 +1,5 @@
 #include "Transmissions.hpp"
+#include "Button.hpp"
 
 #define HC12_TX_PIN 10
 #define HC12_RX_PIN 11
@@ -8,9 +9,26 @@
 #define BUTTON 2
 #define TIMEOUT 10000
 
+namespace Buttons {
+    enum class ButtonType {
+        previous = -1,
+        next = 1,
+        confirm = 0
+    };
+
+    Button previous(5), next(6), confirm(7);
+
+    template<typename Func>
+    void forEachButton(Func callback) {
+        callback(previous, ButtonType::previous);
+        callback(next, ButtonType::next);
+        callback(confirm, ButtonType::confirm);
+    }
+}
+
 void checkHC12Result(bool result, const String &msg);
 
-void testHC12(const String& debugName);
+void testHC12(const String &debugName);
 
 void setupHC12(const String &debugName);
 
@@ -37,6 +55,27 @@ void setup() {
 }
 
 void loop() {
+    Buttons::forEachButton([](Button &button, Buttons::ButtonType type) {
+        if (button.released()) {
+            switch (type) {
+                case Buttons::ButtonType::previous:
+                    Serial.print("\"Previous\" button");
+                    break;
+
+                case Buttons::ButtonType::next:
+                    Serial.print("\"Next\" button");
+                    break;
+
+                case Buttons::ButtonType::confirm:
+                    Serial.print("\"Confirm\" button");
+                    break;
+
+            }
+
+            Serial.println(" released.");
+        }
+    });
+
     static Transmissions transmissions(hc12, HC12_DEBUG_NAME);
     static unsigned long oldTimerStart = timerStart;
 
@@ -47,12 +86,12 @@ void loop() {
     static unsigned long oldReceiveTime = transmissions.getBuzzerReceiveTime();
     const unsigned long receiveTime = transmissions.getBuzzerReceiveTime();
 
-    if(oldTimerStart != timerStart) {
+    if (oldTimerStart != timerStart) {
         oldTimerStart = timerStart;
         transmissions.sendBuzzerSignal();
     }
 
-    if(oldReceiveTime != receiveTime) {
+    if (oldReceiveTime != receiveTime) {
         oldReceiveTime = receiveTime;
         unsigned long duration = receiveTime - timerStart - getPingDuration(transmissions);
 
@@ -65,7 +104,7 @@ void loop() {
     static unsigned long oldDurationNumber = transmissions.getDurationNumber();
     const unsigned long durationNumber = transmissions.getDurationNumber();
 
-    if(oldDurationNumber != durationNumber) {
+    if (oldDurationNumber != durationNumber) {
         oldDurationNumber = durationNumber;
         Serial.println("Received duration: " + String(transmissions.getTransmittedDuration()) + "ms.");
     }
@@ -95,7 +134,7 @@ void handlePingSignals(Transmissions &transmissions) {
 }
 
 unsigned long getPingDuration(Transmissions &transmissions) {
-    if(transmissions.sendPing(TIMEOUT)) {
+    if (transmissions.sendPing(TIMEOUT)) {
         Serial.println("Send ping on " + HC12_DEBUG_NAME + ".");
     }
 
