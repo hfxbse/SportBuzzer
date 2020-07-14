@@ -68,7 +68,9 @@ namespace MainMenu {
     GUITask mainMenu(bool redraw);
 }
 
-GUITask channelSelector();
+GUITask channelSelector(bool redraw);
+
+void drawChannelSelector(Channel currentChannel, bool onSelector, bool selecting);
 
 void setup() {
     Serial.begin(9600);
@@ -214,23 +216,16 @@ namespace MainMenu {
                 if (button.released()) {
                     switch (type) {
                         case Buttons::ButtonType::previous:
-                            Serial.print("\"Previous\" button");
-                            Serial.println(" released.");
                             previousMenuEntry(menuEntries, menuLength);
                             drawMenu(menuEntries, menuLength);
                             break;
 
                         case Buttons::ButtonType::next:
-                            Serial.print("\"Next\" button");
-                            Serial.println(" released.");
                             nextMenuEntry(menuEntries, menuLength);
                             drawMenu(menuEntries, menuLength);
                             break;
 
                         case Buttons::ButtonType::confirm:
-                            Serial.print("\"Confirm\" button");
-                            Serial.println(" released.");
-
                             for (auto &menuEntry : menuEntries) {
                                 if (menuEntry.selected) {
                                     nextTask = menuEntry.task;
@@ -252,11 +247,80 @@ namespace MainMenu {
     }
 }
 
-GUITask channelSelector() {
-    Serial.println("Channel selector");
-    Serial.println();
+GUITask channelSelector(bool redraw) {
+    static Channel channel = C001;
+    static Channel prevChannel = C001;
+    static bool onSelector = true, selecting = false;
 
-    return reinterpret_cast<GUITask>(MainMenu::mainMenu);
+    auto nextTask = reinterpret_cast<GUITask>(channelSelector);
+
+    if (redraw) {
+        onSelector = true;
+        selecting = false;
+        drawChannelSelector(channel, onSelector, selecting);
+    } else {
+        Buttons::forEachButton([&](Button &button, Buttons::ButtonType type) {
+            if (button.released()) {
+                if (!selecting && type != Buttons::ButtonType::confirm) {
+                    // navigation
+                    onSelector = !onSelector;
+                    drawChannelSelector(channel, onSelector, selecting);
+                } else if(type == Buttons::ButtonType::confirm) {
+                    if (!onSelector) {
+                        // exit channel selector, apply channel
+                        if(prevChannel != channel) {
+                            Serial.println("Applying Channel");
+                            prevChannel = channel;
+                        }
+
+                        nextTask = reinterpret_cast<GUITask>(MainMenu::mainMenu);
+                        return;
+                    } else {
+                        // change between navigation and channel selection
+                        selecting = !selecting;
+                        drawChannelSelector(channel, onSelector, selecting);
+                    }
+                } else {
+                    // region change channel
+                    if(type == Buttons::ButtonType::previous && channel != 1) {
+                        channel = static_cast<Channel>(channel - 1);
+                        drawChannelSelector(channel, onSelector, selecting);
+                    } else if (type == Buttons::ButtonType::next && channel != 100) {
+                        channel = static_cast<Channel>(channel + 1);
+                        drawChannelSelector(channel, onSelector, selecting);
+                    }
+                }
+            }
+        });
+    }
+
+    return nextTask;
+}
+
+void drawChannelSelector(Channel currentChannel, bool onSelector, bool selecting) {
+    Serial.println("Channel selector");
+    Serial.println("Buzzers need to be in the same channel to be able to communicate.");
+
+    if (selecting) {
+        Serial.print("+");
+    } else if (onSelector) {
+        Serial.print("x");
+    } else {
+        Serial.print(" ");
+    }
+
+    Serial.print("  Current channel: ");
+    Serial.println(currentChannel);
+
+    if (!onSelector) {
+        Serial.print("x");
+    } else {
+        Serial.print(" ");
+    }
+
+    Serial.println("  OK");
+
+    Serial.println();
 }
 
 namespace Communication {
