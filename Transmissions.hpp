@@ -30,6 +30,7 @@ public:
     bool sendPing(unsigned long timeout);
     TransmissionStatus getPingStatus() const;
     unsigned long getPingResponseTime();
+    unsigned long getPingTime() const;
 
     unsigned long popReceivedPing();
     void sendPingResponse() const;

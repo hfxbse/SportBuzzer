@@ -74,6 +74,10 @@ unsigned long Transmissions::getPingResponseTime() {
     return pingStatus == finished ? pingResponseTime : 0;
 }
 
+unsigned long Transmissions::getPingTime() const {
+    return pingStart;
+}
+
 unsigned long Transmissions::popReceivedPing() {
     if (receivedPingCount) {
         return receivedPingCount--;

@@ -10,7 +10,7 @@
 #define HC12_DEBUG_NAME String("HC12")
 
 #define BUTTON 2
-#define TIMEOUT 10000
+#define TIMEOUT 2000
 
 namespace Buttons {
     enum class ButtonType {
@@ -36,11 +36,13 @@ namespace Communication {
 
     void setupHC12(const String &debugName);
 
-    void handlePingSignals(Transmissions &transmissions);
+    size_t handlePingSignals(Transmissions &transmissions);
 
     unsigned long getPingDuration(Transmissions &transmissions);
 
     HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
+
+    void drawConnectionStatus(TransmissionStatus status);
 }
 
 typedef void *(*(*GUITask)(bool))(bool);
@@ -87,6 +89,8 @@ void setup() {
 
     Communication::testHC12(HC12_DEBUG_NAME);
     Communication::setupHC12(HC12_DEBUG_NAME);
+
+    Communication::drawConnectionStatus(TransmissionStatus::timeout);
 }
 
 void loop() {
@@ -113,6 +117,14 @@ void loop() {
 
     transmissions.poll();
     Communication::handlePingSignals(transmissions);
+
+    // region check connection
+    if (millis() - transmissions.getPingTime() > TIMEOUT + 100) {
+        transmissions.sendPing(TIMEOUT);
+    }
+
+    Communication::drawConnectionStatus(transmissions.getPingStatus());
+    // endregion
 
     // region buzzer press handler
     static unsigned long oldReceiveTime = transmissions.getBuzzerReceiveTime();
@@ -350,10 +362,16 @@ namespace Communication {
         Serial.println("Setup completed on " + debugName);
     }
 
-    void handlePingSignals(Transmissions &transmissions) {
+    size_t handlePingSignals(Transmissions &transmissions) {
+        size_t pingCount = 0;
+
         if (transmissions.popReceivedPing()) {
             transmissions.sendPingResponse();
+
+            ++pingCount;
         }
+
+        return pingCount;
     }
 
     unsigned long getPingDuration(Transmissions &transmissions) {
@@ -373,6 +391,22 @@ namespace Communication {
         }
 
         return transmissions.getPingResponseTime();
+    }
+
+    void drawConnectionStatus(TransmissionStatus status) {
+        static TransmissionStatus previousStatus = TransmissionStatus::unfinished;
+
+        if (status != TransmissionStatus::unfinished && previousStatus != status) {
+            previousStatus = status;
+
+            if (status == TransmissionStatus::finished) {
+                Serial.println("Connected");
+            } else {
+                Serial.println("Not connected");
+            }
+
+            Serial.println();
+        }
     }
 }
 
