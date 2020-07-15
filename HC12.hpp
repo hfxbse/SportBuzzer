@@ -27,7 +27,7 @@ public:
 
     bool setTransmissionBaud(Baud baud = B9600);
     bool setChannel(Channel channel = C001);
-    bool setTransmissionPower(TransmissionPowerMode powerMode);
+    bool setTransmissionPower(TransmissionPowerMode powerMode = TransmissionPowerMode::P8);
     bool restoreDefaults();
 
     void print(const char *str);
@@ -52,6 +52,7 @@ private:
     template<typename Func>
     void data(Func writeCallback);
 
+    bool inAtMode = false;
     bool operation(const String &command, unsigned delayDuration = 50);
 
     bool wasOperationSuccessful();

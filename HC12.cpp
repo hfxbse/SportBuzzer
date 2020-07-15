@@ -18,7 +18,12 @@ bool HC12::test() {
 }
 
 bool HC12::operation(const String &command, unsigned delayDuration) {
-    digitalWrite(setPin, LOW);
+    if(!inAtMode) {
+        digitalWrite(setPin, LOW);
+        delay(200);
+
+        inAtMode = true;
+    }
 
     flush();
     softwareSerial.print(command);
@@ -89,6 +94,8 @@ void HC12::write(unsigned long value) {
 template<typename Func>
 void HC12::data(Func writeCallback) {
     digitalWrite(setPin, HIGH);
+    inAtMode = false;
+
     writeCallback();
 }
 
