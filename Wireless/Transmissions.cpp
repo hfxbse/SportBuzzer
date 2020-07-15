@@ -4,7 +4,7 @@
 
 #include "Transmissions.hpp"
 
-Transmissions::Transmissions(HC12 &module, const String &debugName) : module(module), moduleDebugName(debugName) {}
+Transmissions::Transmissions(HC12 &module) : module(module) {}
 
 void Transmissions::poll() {
     while (module.available()) {

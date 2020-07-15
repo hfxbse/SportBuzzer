@@ -2,6 +2,7 @@
 // Created by stubit on 4/13/20.
 //
 
+#include <USBAPI.h>
 #include "HC12.hpp"
 
 HC12::HC12(const int rxPin, const int txPin, const int setPin)

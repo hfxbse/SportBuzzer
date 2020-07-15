@@ -6,7 +6,6 @@
 #define SPORTBUZZER_HC12_HPP
 
 #include <SoftwareSerial.h>
-#include <Arduino.h>
 #include "HC12_Options.hpp"
 
 class HC12 {

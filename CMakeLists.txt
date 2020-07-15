@@ -7,10 +7,15 @@ project(${PROJECT_NAME} CXX)
 
 add_executable(
         ${PROJECT_NAME}
-        sport_buzzer.cpp
-        HC12.cpp HC12.hpp HC12_Options.hpp
-        Transmissions.cpp Transmissions.hpp
-        Button.cpp Button.hpp
+        SportBuzzer.cpp
+        HardwareInterfaces/HC12.cpp HardwareInterfaces/HC12.hpp HardwareInterfaces/HC12_Options.hpp
+        Wireless/Transmissions.cpp Wireless/Transmissions.hpp
+        HardwareInterfaces/Button.cpp HardwareInterfaces/Button.hpp
+        GUI/MainMenu.cpp GUI/MainMenu.hpp
+        Buttons.hpp Buttons.cpp
+        GUI/ChannelSelector.cpp GUI/ChannelSelector.hpp
+        GUI/GUITask.hpp
+        Wireless/Communication.cpp Wireless/Communication.hpp
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)

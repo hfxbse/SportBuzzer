@@ -6,7 +6,8 @@
 #define SPORTBUZZER_TRANSMISSIONS_HPP
 
 
-#include "HC12.hpp"
+#include <USBAPI.h>
+#include "../HardwareInterfaces/HC12.hpp"
 
 enum Signal {
     ping = 1,
@@ -23,7 +24,7 @@ enum TransmissionStatus {
 
 class Transmissions {
 public:
-    Transmissions(HC12 &module, const String &debugName);
+    explicit Transmissions(HC12 &module);
 
     void poll();
 
@@ -52,7 +53,6 @@ public:
 private:
     // related to module
     HC12 &module;
-    const String &moduleDebugName;
 
     // related to ping signals
     unsigned long pingStart = 0, pingResponseTime = 0, receivedPingCount = 0, pingTimeout = 0;
