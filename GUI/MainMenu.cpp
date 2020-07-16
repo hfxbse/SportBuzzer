@@ -5,43 +5,36 @@
 #include <HardwareSerial.h>
 #include "MainMenu.hpp"
 #include "ChannelSelector.hpp"
-#include "../Buttons.hpp"
+#include "../GUIInput.hpp"
 
 GUITask * MainMenu::update(bool redraw) {
-    GUITask * nextTask = this;
-
     if (redraw) {
         draw();
     } else {
-        // region gui button handling
-        Buttons::forEachButton([&](Button &button, Buttons::ButtonType type) {
-            if (button.released()) {
-                switch (type) {
-                    case Buttons::ButtonType::previous:
-                        previousMenuEntry();
-                        draw();
-                        break;
-                        case Buttons::ButtonType::next:nextMenuEntry();
-                        draw();
-                        break;
-                        case Buttons::ButtonType::confirm:for (auto &menuEntry : menuEntries) {
-                            if (menuEntry.selected) {
-                                nextTask = menuEntry.taskFactory();
-                                Serial.println();
-                                return;
-                            }
-                        }
+        GUIInput input;
+        input.poll();
 
-                        Serial.println("ERROR: No menu entry selected.");
-                        Serial.println();
-                        break;
+        if(input.previous()) {
+            previousMenuEntry();
+            draw();
+        } else if (input.next()) {
+            nextMenuEntry();
+            draw();
+        } else if (input.confirm()) {
+            for (auto &menuEntry : menuEntries) {
+                if (menuEntry.selected) {
+                    Serial.println();
+                    return menuEntry.taskFactory();
                 }
             }
-        });
+
+            Serial.println("ERROR: No menu entry selected.");
+            Serial.println();
+        }
         // endregion
     }
 
-    return nextTask;
+    return this;
 }
 
 void MainMenu::draw() {

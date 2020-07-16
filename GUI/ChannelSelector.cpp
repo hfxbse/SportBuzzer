@@ -3,55 +3,51 @@
 //
 
 #include "ChannelSelector.hpp"
-#include "../Buttons.hpp"
+#include "../GUIInput.hpp"
 #include "MainMenu.hpp"
 #include "../Wireless/Communication.hpp"
 
-GUITask * ChannelSelector::update(bool redraw) {
-    GUITask * nextTask = this;
-
+GUITask *ChannelSelector::update(bool redraw) {
     if (redraw) {
         draw();
     } else {
-        Buttons::forEachButton([&](Button &button, Buttons::ButtonType type) {
-            if (button.released()) {
-                if (!selecting && type != Buttons::ButtonType::confirm) {
-                    // navigation
-                    onSelector = !onSelector;
-                    draw();
-                } else if (type == Buttons::ButtonType::confirm) {
-                    if (!onSelector) {
-                        // exit channel selector, apply channel
-                        if (previousChannel != channel) {
-                            Serial.println("Applying Channel");
+        GUIInput input;
+        input.poll();
 
-                            Communication::checkHC12Result(
-                                    Communication::hc12.setChannel(channel),
-                                    "Could not apply channel \n");
-                        }
+        if (!selecting && (input.next() || input.previous())) {
+            // navigation
+            onSelector = !onSelector;
+            draw();
+        } else if (input.confirm()) {
+            if (!onSelector) {
+                // exit channel selector, apply channel
+                if (previousChannel != channel) {
+                    Serial.println("Applying Channel");
 
-                        nextTask = new MainMenu();
-                        return;
-                    } else {
-                        // change between navigation and channel selection
-                        selecting = !selecting;
-                        draw();
-                    }
-                } else {
-                    // region change channel
-                    if (type == Buttons::ButtonType::previous && channel != 1) {
-                        channel = static_cast<Channel>(channel - 1);
-                        draw();
-                    } else if (type == Buttons::ButtonType::next && channel != 100) {
-                        channel = static_cast<Channel>(channel + 1);
-                        draw();
-                    }
+                    Communication::checkHC12Result(
+                            Communication::hc12.setChannel(channel),
+                            "Could not apply channel \n");
                 }
+
+                return new MainMenu();
+            } else {
+                // change between navigation and channel selection
+                selecting = !selecting;
+                draw();
             }
-        });
+        } else if (selecting) {
+            // region change channel
+            if (input.previous() && channel != 1) {
+                channel = static_cast<Channel>(channel - 1);
+                draw();
+            } else if (input.next() && channel != 100) {
+                channel = static_cast<Channel>(channel + 1);
+                draw();
+            }
+        }
     }
 
-    return nextTask;
+    return this;
 }
 
 void ChannelSelector::draw() {

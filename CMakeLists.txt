@@ -12,11 +12,12 @@ add_executable(
         Wireless/Transmissions.cpp Wireless/Transmissions.hpp
         HardwareInterfaces/Button.cpp HardwareInterfaces/Button.hpp
         GUI/MainMenu.cpp GUI/MainMenu.hpp
-        Buttons.hpp Buttons.cpp
+        GUIInput.hpp GUIInput.cpp
         GUI/ChannelSelector.cpp GUI/ChannelSelector.hpp
         GUI/GUITask.hpp
         Wireless/Communication.cpp Wireless/Communication.hpp
-        GUI/MenuEntry.cpp GUI/MenuEntry.hpp)
+        GUI/MenuEntry.cpp GUI/MenuEntry.hpp
+)
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)
 
