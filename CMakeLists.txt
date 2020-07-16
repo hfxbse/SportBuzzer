@@ -16,7 +16,7 @@ add_executable(
         GUI/ChannelSelector.cpp GUI/ChannelSelector.hpp
         GUI/GUITask.hpp
         Wireless/Communication.cpp Wireless/Communication.hpp
-)
+        GUI/MenuEntry.cpp GUI/MenuEntry.hpp)
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)
 

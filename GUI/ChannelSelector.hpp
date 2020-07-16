@@ -8,10 +8,17 @@
 #include "../HardwareInterfaces/HC12_Options.hpp"
 #include "GUITask.hpp"
 
-namespace ChannelSelector {
-    GUITask channelSelector(bool redraw);
+class ChannelSelector : public GUITask {
+public:
+    GUITask * update(bool redraw);
 
-    void drawChannelSelector(Channel currentChannel, bool onSelector, bool selecting);
-}
+private:
+    void draw();
+
+    static inline Channel channel = C001;
+    const Channel previousChannel = channel;
+
+    bool onSelector = true, selecting = false;
+};
 
 #endif //SPORTBUZZER_CHANNEL_SELECTOR_HPP

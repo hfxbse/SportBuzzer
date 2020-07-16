@@ -9,28 +9,27 @@
 
 
 #include "GUITask.hpp"
+#include "MenuEntry.hpp"
+#include "ChannelSelector.hpp"
 #include <WString.h>
 
-namespace MainMenu {
-    class MenuEntry {
-    public:
-        explicit MenuEntry(const String &text, GUITask task, bool selected = false)
-                : text(text), task(task), selected(selected) {};
+class MainMenu : public GUITask {
+public:
+    GUITask * update(bool redraw);
 
-        String text;
-        bool selected;
+private:
+    void draw();
 
-        GUITask task;
+    void previousMenuEntry();
+    void nextMenuEntry();
+
+    static const size_t MENU_LENGTH = 3;
+    MenuEntry menuEntries[MENU_LENGTH] = {
+            MenuEntry("Entry 1", []() -> GUITask * {return nullptr;}, true),
+            MenuEntry("Entry 2", []() -> GUITask * {return nullptr;}),
+            MenuEntry("Channel selection", []() -> GUITask * {return new ChannelSelector();}),
     };
-
-    void drawMenu(const MenuEntry menuEntries[], size_t size);
-
-    void previousMenuEntry(MenuEntry *menuEntries, size_t size);
-
-    void nextMenuEntry(MenuEntry *menuEntries, size_t size);
-
-    GUITask mainMenu(bool redraw);
-}
+};
 
 #endif //SPORTBUZZER_MAIN_MENU_HPP
 

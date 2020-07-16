@@ -27,18 +27,22 @@ void setup() {
 }
 
 void loop() {
-    static auto task = reinterpret_cast<GUITask>(MainMenu::mainMenu);
-    static GUITask prevTask = nullptr;
+    static GUITask * task = new MainMenu();
+    static GUITask * prevTask = nullptr;
 
     // region update battery status
     // TODO
     // endregion
 
     // region gui task handler
-    auto newTask = reinterpret_cast<GUITask>(task(task != prevTask));
+    auto newTask = task->update(task != prevTask);
     if (newTask != nullptr) {
         prevTask = task;
         task = newTask;
+
+        if(prevTask != task) {
+            delete prevTask;
+        }
     } else {
         Serial.println("ERROR: No next task provided after finishing the current task.");
         Serial.println();

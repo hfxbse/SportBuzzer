@@ -5,6 +5,9 @@
 #ifndef SPORTBUZZER_GUI_TASK_HPP
 #define SPORTBUZZER_GUI_TASK_HPP
 
-typedef void *(*(*GUITask)(bool))(bool);
+class GUITask {
+public:
+    virtual GUITask* update(bool redraw) = 0;
+};
 
 #endif //SPORTBUZZER_GUI_TASK_HPP
