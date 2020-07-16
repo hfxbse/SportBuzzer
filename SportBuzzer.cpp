@@ -1,8 +1,8 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-pass-by-value"
 
-#include "GUI/MainMenu.hpp"
-#include "Wireless/Communication.hpp"
+#include "src/GUI/MainMenu.hpp"
+#include "src/Wireless/Communication.hpp"
 
 #define BUTTON 2
 #define TIMEOUT 2000

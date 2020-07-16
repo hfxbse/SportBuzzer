@@ -5,7 +5,7 @@
 #ifndef SPORTBUZZER_GUI_INPUT_HPP
 #define SPORTBUZZER_GUI_INPUT_HPP
 
-#include "HardwareInterfaces/Button.hpp"
+#include "../HardwareInterfaces/Button.hpp"
 
 class GUIInput {
 public:

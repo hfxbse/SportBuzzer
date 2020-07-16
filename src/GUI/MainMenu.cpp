@@ -5,7 +5,7 @@
 #include <HardwareSerial.h>
 #include "MainMenu.hpp"
 #include "ChannelSelector.hpp"
-#include "../GUIInput.hpp"
+#include "GUIInput.hpp"
 
 GUITask * MainMenu::update(bool redraw) {
     if (redraw) {

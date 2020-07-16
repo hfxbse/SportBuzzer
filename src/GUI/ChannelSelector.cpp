@@ -3,7 +3,7 @@
 //
 
 #include "ChannelSelector.hpp"
-#include "../GUIInput.hpp"
+#include "GUIInput.hpp"
 #include "MainMenu.hpp"
 #include "../Wireless/Communication.hpp"
 

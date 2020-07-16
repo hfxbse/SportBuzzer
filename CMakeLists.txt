@@ -8,15 +8,15 @@ project(${PROJECT_NAME} CXX)
 add_executable(
         ${PROJECT_NAME}
         SportBuzzer.cpp
-        HardwareInterfaces/HC12.cpp HardwareInterfaces/HC12.hpp HardwareInterfaces/HC12_Options.hpp
-        Wireless/Transmissions.cpp Wireless/Transmissions.hpp
-        HardwareInterfaces/Button.cpp HardwareInterfaces/Button.hpp
-        GUI/MainMenu.cpp GUI/MainMenu.hpp
-        GUIInput.hpp GUIInput.cpp
-        GUI/ChannelSelector.cpp GUI/ChannelSelector.hpp
-        GUI/GUITask.hpp
-        Wireless/Communication.cpp Wireless/Communication.hpp
-        GUI/MenuEntry.cpp GUI/MenuEntry.hpp
+        src/HardwareInterfaces/HC12.cpp src/HardwareInterfaces/HC12.hpp src/HardwareInterfaces/HC12_Options.hpp
+        src/Wireless/Transmissions.cpp src/Wireless/Transmissions.hpp
+        src/HardwareInterfaces/Button.cpp src/HardwareInterfaces/Button.hpp
+        src/GUI/MainMenu.cpp src/GUI/MainMenu.hpp
+        src/GUI/GUIInput.hpp src/GUI/GUIInput.cpp
+        src/GUI/ChannelSelector.cpp src/GUI/ChannelSelector.hpp
+        src/GUI/GUITask.hpp
+        src/Wireless/Communication.cpp src/Wireless/Communication.hpp
+        src/GUI/MenuEntry.cpp src/GUI/MenuEntry.hpp
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)
