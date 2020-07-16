@@ -7,14 +7,14 @@
 #include "ChannelSelector.hpp"
 #include "GUIInput.hpp"
 
-GUITask * MainMenu::update(bool redraw) {
+GUITask *MainMenu::update(Transmissions &, unsigned long, bool redraw) {
     if (redraw) {
         draw();
     } else {
         GUIInput input;
         input.poll();
 
-        if(input.previous()) {
+        if (input.previous()) {
             previousMenuEntry();
             draw();
         } else if (input.next()) {

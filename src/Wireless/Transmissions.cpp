@@ -19,8 +19,8 @@ void Transmissions::poll() {
                     pingResponseTime = millis() - pingStart;
                     break;
 
-                case Signal::buzzer:
-                    buzzerTime = millis();
+                case Signal::stopwatch:
+                    stopwatchTime = millis();
                     break;
 
                 case Signal::time:
@@ -28,6 +28,11 @@ void Transmissions::poll() {
                     transmittedDurationBytes = 0;
                     transmittedDuration = 0;
                     durationTransmissionStart = millis();
+                    break;
+
+                case Signal::cancel:
+                    ++receivedCancelCount;
+                    break;
             }
         } else {
             ++transmittedDurationBytes;
@@ -96,12 +101,12 @@ void Transmissions::waitOnPing() {
     }
 }
 
-void Transmissions::sendBuzzerSignal() {
-    module.write(static_cast<byte>(Signal::buzzer));
+void Transmissions::sendStopwatchSignal() const {
+    module.write(static_cast<byte>(Signal::stopwatch));
 }
 
-unsigned long Transmissions::getBuzzerReceiveTime() const {
-    return buzzerTime;
+unsigned long Transmissions::getStopwatchSignalTime() const {
+    return stopwatchTime;
 }
 
 TransmissionStatus Transmissions::getTimeTransmissionStatus() const {
@@ -119,4 +124,12 @@ void Transmissions::sendDuration(unsigned long duration) const {
 
 byte Transmissions::getDurationNumber() const {
     return receivedDurationCount;
+}
+
+void Transmissions::sendCancelSignal() const {
+    module.write(static_cast<byte>(Signal::cancel));
+}
+
+byte Transmissions::getCancelNumber() const {
+    return receivedCancelCount;
 }

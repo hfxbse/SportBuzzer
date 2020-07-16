@@ -11,11 +11,12 @@
 #include "GUITask.hpp"
 #include "MenuEntry.hpp"
 #include "ChannelSelector.hpp"
+#include "Stopwatch.hpp"
 #include <WString.h>
 
 class MainMenu : public GUITask {
 public:
-    GUITask * update(bool redraw);
+    GUITask *update(Transmissions &, unsigned long, bool redraw) override;
 
 private:
     void draw();
@@ -25,9 +26,9 @@ private:
 
     static const size_t MENU_LENGTH = 3;
     MenuEntry menuEntries[MENU_LENGTH] = {
-            MenuEntry("Entry 1", []() -> GUITask * {return nullptr;}, true),
-            MenuEntry("Entry 2", []() -> GUITask * {return nullptr;}),
-            MenuEntry("Channel selection", []() -> GUITask * {return new ChannelSelector();}),
+            MenuEntry("Stopwatch", []() -> GUITask * { return new Stopwatch(); }, true),
+            MenuEntry("Entry 2", []() -> GUITask * { return nullptr; }),
+            MenuEntry("Channel selection", []() -> GUITask * { return new ChannelSelector(); }),
     };
 };
 

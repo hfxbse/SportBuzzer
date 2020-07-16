@@ -12,8 +12,9 @@
 enum Signal {
     ping = 1,
     pong = 2,
-    buzzer = 3,
+    stopwatch = 3,
     time = 4,
+    cancel = 5,
 };
 
 enum TransmissionStatus {
@@ -29,26 +30,36 @@ public:
     void poll();
 
     bool sendPing(unsigned long timeout);
+
     TransmissionStatus getPingStatus() const;
+
     unsigned long getPingResponseTime();
+
     unsigned long getPingTime() const;
 
     unsigned long popReceivedPing();
+
     void sendPingResponse() const;
 
     void waitOnPing();
 
-    void sendBuzzerSignal();
-    unsigned long getBuzzerReceiveTime() const;
+    void sendStopwatchSignal() const;
+
+    unsigned long getStopwatchSignalTime() const;
 
     unsigned long transmissionTimeout = 10000;
 
     TransmissionStatus getTimeTransmissionStatus() const;
+
     unsigned long getTransmittedDuration() const;
 
     void sendDuration(unsigned long duration) const;
 
     byte getDurationNumber() const;
+
+    void sendCancelSignal() const;
+
+    byte getCancelNumber() const;
 
 private:
     // related to module
@@ -58,8 +69,11 @@ private:
     unsigned long pingStart = 0, pingResponseTime = 0, receivedPingCount = 0, pingTimeout = 0;
     TransmissionStatus pingStatus = finished;
 
-    // related to buzzer signal
-    unsigned long buzzerTime = 0;
+    // related to stopwatch signal
+    unsigned long stopwatchTime = 0;
+
+    // related to cancel signal
+    byte receivedCancelCount = 0;
 
     // related to duration transmission
     TransmissionStatus durationTransmissionStatus = finished;

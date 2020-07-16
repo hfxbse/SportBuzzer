@@ -7,7 +7,7 @@
 #include "MainMenu.hpp"
 #include "../Wireless/Communication.hpp"
 
-GUITask *ChannelSelector::update(bool redraw) {
+GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
     if (redraw) {
         draw();
     } else {

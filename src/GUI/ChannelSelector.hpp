@@ -10,7 +10,7 @@
 
 class ChannelSelector : public GUITask {
 public:
-    GUITask * update(bool redraw);
+    GUITask *update(Transmissions &, unsigned long, bool redraw) override;
 
 private:
     void draw();

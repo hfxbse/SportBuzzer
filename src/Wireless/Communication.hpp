@@ -21,8 +21,6 @@ namespace Communication {
 
     size_t handlePingSignals(Transmissions &transmissions);
 
-    unsigned long getPingDuration(Transmissions &transmissions);
-
     extern HC12 hc12;
 
     void drawConnectionStatus(TransmissionStatus status);

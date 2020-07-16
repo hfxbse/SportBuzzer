@@ -17,6 +17,7 @@ add_executable(
         src/GUI/GUITask.hpp
         src/Wireless/Communication.cpp src/Wireless/Communication.hpp
         src/GUI/MenuEntry.cpp src/GUI/MenuEntry.hpp
+        src/GUI/Stopwatch.cpp src/GUI/Stopwatch.hpp
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)

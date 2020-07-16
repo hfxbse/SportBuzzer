@@ -35,25 +35,6 @@ namespace Communication {
         return pingCount;
     }
 
-    unsigned long getPingDuration(Transmissions &transmissions) {
-        if (transmissions.sendPing(TIMEOUT)) {
-            Serial.println("Sending ping.");
-        }
-
-        transmissions.waitOnPing();
-        TransmissionStatus pingStatus = transmissions.getPingStatus();
-
-        if (pingStatus == finished) {
-            Serial.println(
-                    "Ping took " + String(transmissions.getPingResponseTime()) + "ms."
-            );
-        } else if (pingStatus == timeout) {
-            Serial.println("Ping timeout.");
-        }
-
-        return transmissions.getPingResponseTime();
-    }
-
     void drawConnectionStatus(TransmissionStatus status) {
         static TransmissionStatus previousStatus = TransmissionStatus::unfinished;
 
