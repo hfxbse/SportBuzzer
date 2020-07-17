@@ -15,7 +15,7 @@ add_executable(
         src/GUI/GUIInput.hpp src/GUI/GUIInput.cpp
         src/GUI/ChannelSelector.cpp src/GUI/ChannelSelector.hpp
         src/GUI/GUITask.hpp
-        src/Wireless/Communication.cpp src/Wireless/Communication.hpp
+        src/Wireless/Connection.cpp src/Wireless/Connection.hpp
         src/GUI/MenuEntry.cpp src/GUI/MenuEntry.hpp
         src/GUI/Stopwatch.cpp src/GUI/Stopwatch.hpp
         src/GUI/Timer.cpp src/GUI/Timer.hpp

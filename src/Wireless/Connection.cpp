@@ -2,9 +2,9 @@
 // Created by stubit on 7/15/20.
 //
 
-#include "Communication.hpp"
+#include "Connection.hpp"
 
-namespace Communication {
+namespace Connection {
     HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
 
     void checkHC12Result(bool result, const String &msg) {
@@ -14,7 +14,7 @@ namespace Communication {
     }
 
     void testHC12() {
-        Communication::checkHC12Result(hc12.test(), "Unable to connect to HC12.");
+        Connection::checkHC12Result(hc12.test(), "Unable to connect to HC12.");
     }
 
     void setupHC12() {

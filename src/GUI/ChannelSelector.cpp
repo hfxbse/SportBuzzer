@@ -5,7 +5,7 @@
 #include "ChannelSelector.hpp"
 #include "GUIInput.hpp"
 #include "MainMenu.hpp"
-#include "../Wireless/Communication.hpp"
+#include "../Wireless/Connection.hpp"
 
 GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
     if (redraw) {
@@ -24,8 +24,8 @@ GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
                 if (previousChannel != channel) {
                     Serial.println("Applying Channel");
 
-                    Communication::checkHC12Result(
-                            Communication::hc12.setChannel(channel),
+                    Connection::checkHC12Result(
+                            Connection::hc12.setChannel(channel),
                             "Could not apply channel \n");
                 }
 

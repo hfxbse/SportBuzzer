@@ -2,7 +2,7 @@
 #pragma ide diagnostic ignored "modernize-pass-by-value"
 
 #include "src/GUI/MainMenu.hpp"
-#include "src/Wireless/Communication.hpp"
+#include "src/Wireless/Connection.hpp"
 
 #define BUTTON 2
 #define TIMEOUT 2000
@@ -12,7 +12,7 @@ volatile unsigned long buzzerTime = 0;
 void setup() {
     Serial.begin(9600);
 
-    Communication::hc12.start(B9600);
+    Connection::hc12.start(B9600);
 
     pinMode(BUTTON, INPUT_PULLUP);
 
@@ -20,10 +20,10 @@ void setup() {
         buzzerTime = millis();
     }, RISING);
 
-    Communication::testHC12();
-    Communication::setupHC12();
+    Connection::testHC12();
+    Connection::setupHC12();
 
-    Communication::drawConnectionStatus(TransmissionStatus::timeout);
+    Connection::drawConnectionStatus(TransmissionStatus::timeout);
 }
 
 void loop() {
@@ -34,7 +34,7 @@ void loop() {
     // TODO
     // endregion
 
-    static Transmissions transmissions(Communication::hc12);
+    static Transmissions transmissions(Connection::hc12);
     transmissions.poll();
 
     // region gui task handler
@@ -52,14 +52,14 @@ void loop() {
     }
     // endregion
 
-    Communication::handlePingSignals(transmissions);
+    Connection::handlePingSignals(transmissions);
 
     // region check connection
     if (millis() - transmissions.getPingTime() > TIMEOUT + 100) {
         transmissions.sendPing(TIMEOUT);
     }
 
-    Communication::drawConnectionStatus(transmissions.getPingStatus());
+    Connection::drawConnectionStatus(transmissions.getPingStatus());
     // endregion
 }
 
