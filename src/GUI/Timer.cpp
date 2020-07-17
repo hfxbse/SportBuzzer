@@ -12,20 +12,58 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
         Timer::buzzerTime = buzzerTime;
         Timer::previousLeftTimeNumber = transmissions.getDurationNumber();
         previousLimitNumber = transmissions.getLimitNumber();
+        previousCancelNumber = transmissions.getCancelNumber();
         draw();
     } else {
+        // region buzzer
+        if (Timer::buzzerTime != buzzerTime) {
+            started = !started;
+
+            if (started) {
+                prepareTimerStart();
+
+                transmissions.sendTimerSignal();
+                transmissions.sendLimit(timeLimit);
+
+                redraw = true;
+            } else {
+                if (Timer::buzzerTime > timerSignalTime) {
+                    leftTime = (timeLimit * 1000) - (buzzerTime - Timer::buzzerTime);
+
+                    transmissions.sendDuration(leftTime);
+                    transmissions.sendLimit(timeLimit);
+                } else {
+                    transmissions.sendTimerSignal();
+                }
+
+                redraw = Timer::buzzerTime > timerSignalTime;
+            }
+
+            Timer::buzzerTime = buzzerTime;
+        }
+        // endregion
+
         // region communication
+        if (previousLeftTimeNumber != transmissions.getDurationNumber()) {
+            // stop timer on received duration, apply duration
+            previousLeftTimeNumber = transmissions.getDurationNumber();
+
+            leftTime = static_cast<long>(transmissions.getTransmittedDuration());
+            started = false;
+        }
+
         if (previousLimitNumber != transmissions.getLimitNumber()) {
             // redraw with new time limit
             previousLimitNumber = transmissions.getLimitNumber();
-            timeLimit = transmissions.getTransmittedLimit();
+
+            if (!started || (started && Timer::buzzerTime < timerSignalTime)) {
+                timeLimit = transmissions.getTransmittedLimit();
+            }
 
             redraw = true;
         }
 
         if (transmissions.getTimerSignalTime() != timerSignalTime) {
-            timerSignalTime = transmissions.getTimerSignalTime();
-
             if (!started) {
                 // start on timer signal if not started
                 prepareTimerStart();
@@ -33,39 +71,25 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
                 // stop on timer signal if started
                 started = false;
                 unsigned long startTime = timerSignalTime > buzzerTime ? timerSignalTime : buzzerTime;
-                leftTime = (timeLimit * 1000) - (timerSignalTime - startTime);
+
+                leftTime = (timeLimit * 1000) - (transmissions.getTimerSignalTime() - startTime);
+
                 transmissions.sendDuration(leftTime);
                 transmissions.sendLimit(timeLimit);
+
+                redraw = true;
             }
+
+            timerSignalTime = transmissions.getTimerSignalTime();
         }
 
-        if (previousLeftTimeNumber != transmissions.getDurationNumber()) {
-            // stop timer on received duration, apply duration
-            previousLeftTimeNumber = transmissions.getDurationNumber();
-            leftTime = static_cast<long>(transmissions.getTransmittedDuration());
+        if (previousCancelNumber != transmissions.getCancelNumber()) {
+            redraw = redraw || started;
 
             started = false;
-            // will get redrawn on time limit sync
-        }
-        // endregion
+            leftTime = 0;
 
-        // region buzzer
-        if (Timer::buzzerTime != buzzerTime) {
-            started = !started;
-
-            if (started) {
-                prepareTimerStart();
-                transmissions.sendTimerSignal();
-            } else if (buzzerTime > timerSignalTime) {
-                leftTime = (timeLimit * 1000) - (buzzerTime - Timer::buzzerTime);
-                transmissions.sendDuration(static_cast<unsigned long>(leftTime));
-            } else {
-                transmissions.sendTimerSignal();
-            }
-
-            Timer::buzzerTime = buzzerTime;
-            transmissions.sendLimit(timeLimit);
-            redraw = true;
+            previousCancelNumber = transmissions.getCancelNumber();
         }
         // endregion
 
@@ -74,10 +98,11 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
 
         // region navigation
         if (started && input.confirm()) {
-            Timer::buzzerTime = buzzerTime;
             started = false;
             leftTime = 0;
+
             transmissions.sendCancelSignal();
+
             redraw = true;
         } else if (!started) {
             if (!changingLimit && (input.next() || input.previous())) {
@@ -92,26 +117,7 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
                     return new MainMenu();
                 }
             } else if (changingLimit) {
-                unsigned stepSize = digitOffset % 2 ? 10 * pow(60, digitOffset / 2) : pow(60, digitOffset / 2);
-                stepSize += digitOffset >= 2 ? 1 : 0;
-
-                if (input.previous() && (timeLimit / stepSize) % 10 != 0) {
-                    timeLimit -= stepSize;
-                    redraw = true;
-                } else if (input.next() && (timeLimit / stepSize) % 10 != (digitOffset % 2 ? 5 : 9)) {
-                    timeLimit += stepSize;
-                    redraw = true;
-                } else if (input.confirm()) {
-                    ++digitOffset;
-
-                    if (digitOffset > 4) {
-                        changingLimit = false;
-                        timeLimit = timeLimit > 0 ? timeLimit : 1;
-                        transmissions.sendLimit(timeLimit);
-                    }
-
-                    redraw = true;
-                }
+                redraw = redraw || timeLimitInput(input, transmissions);
             }
         }
         // endregion
@@ -191,4 +197,29 @@ void Timer::prepareTimerStart() {
     leftTime = 0;
     timeLimit = timeLimit > 1 ? timeLimit : 1;
     digitOffset = 0;
+}
+
+bool Timer::timeLimitInput(const GUIInput &input, const Transmissions &transmissions) {
+    unsigned stepSize = digitOffset % 2 ? 10 * pow(60, digitOffset / 2) : pow(60, digitOffset / 2);
+    stepSize += digitOffset >= 2 ? 1 : 0;
+
+    if (input.previous() && (timeLimit / stepSize) % 10 != 0) {
+        timeLimit -= stepSize;
+        return true;
+    } else if (input.next() && (timeLimit / stepSize) % 10 != (digitOffset % 2 ? 5 : 9)) {
+        timeLimit += stepSize;
+        return true;
+    } else if (input.confirm()) {
+        ++digitOffset;
+
+        if (digitOffset > 4) {
+            changingLimit = false;
+            timeLimit = timeLimit > 0 ? timeLimit : 1;
+            transmissions.sendLimit(timeLimit);
+        }
+
+        return true;
+    }
+
+    return false;
 }

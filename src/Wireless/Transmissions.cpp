@@ -162,7 +162,7 @@ unsigned int Transmissions::getTransmittedLimit() const {
     return transmittedLimit;
 }
 
-void Transmissions::sendLimit(unsigned long limit) const {
+void Transmissions::sendLimit(unsigned int limit) const {
     module.write(static_cast<byte>(Signal::limit));
     module.write(limit);
 }

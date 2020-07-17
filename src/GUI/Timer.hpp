@@ -7,6 +7,7 @@
 
 
 #include "GUITask.hpp"
+#include "GUIInput.hpp"
 
 class Timer : public GUITask {
 public:
@@ -19,12 +20,14 @@ private:
 
     void prepareTimerStart();
 
+    bool timeLimitInput(const GUIInput &input, const Transmissions &transmissions);
+
     // related to timer
     long leftTime = 0;
     long previousLeftTimeNumber;
     unsigned long buzzerTime, timerSignalTime;
     unsigned int timeLimit = 1;
-    byte previousLimitNumber;
+    byte previousLimitNumber, previousCancelNumber;
 
     // related to navigation
     bool started = false, onLimit = true, changingLimit = false;

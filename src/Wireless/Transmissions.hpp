@@ -67,7 +67,7 @@ public:
 
     unsigned int getTransmittedLimit() const;
 
-    void sendLimit(unsigned long limit) const;
+    void sendLimit(unsigned int limit) const;
 
     byte getLimitNumber() const;
 
@@ -100,7 +100,8 @@ private:
     // related to limit transmission
     TransmissionStatus limitTransmissionStatus = finished;
     byte transmittedLimitBytes = 0, receivedLimitCount = 0;
-    unsigned long transmittedLimit = 0, limitTransmissionStart = 0;
+    unsigned int transmittedLimit = 0;
+    unsigned long limitTransmissionStart = 0;
 
     template<typename T>
     T writeData(T value, byte &transmittedByteCount, TransmissionStatus &status, byte &transmissionNumber);
