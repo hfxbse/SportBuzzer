@@ -12,6 +12,7 @@
 #include "MenuEntry.hpp"
 #include "ChannelSelector.hpp"
 #include "Stopwatch.hpp"
+#include "Timer.hpp"
 #include <WString.h>
 
 class MainMenu : public GUITask {
@@ -27,7 +28,7 @@ private:
     static const size_t MENU_LENGTH = 3;
     MenuEntry menuEntries[MENU_LENGTH] = {
             MenuEntry("Stopwatch", []() -> GUITask * { return new Stopwatch(); }, true),
-            MenuEntry("Entry 2", []() -> GUITask * { return nullptr; }),
+            MenuEntry("Timer", []() -> GUITask * { return new Timer(); }),
             MenuEntry("Channel selection", []() -> GUITask * { return new ChannelSelector(); }),
     };
 };

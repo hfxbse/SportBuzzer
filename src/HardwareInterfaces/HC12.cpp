@@ -60,44 +60,9 @@ bool HC12::restoreDefaults() {
     return operation("AT+DEFAULT", 75);
 }
 
-void HC12::write(uint8_t byte) {
-    data([this, &byte]() {
-        softwareSerial.write(byte);
-    });
-}
-
-void HC12::write(const char *str) {
-    data([this, str]() {
-        softwareSerial.write(str);
-    });
-}
-
-void HC12::write(uint8_t *buffer, size_t size) {
-    data([this, buffer, &size]() {
-        softwareSerial.write(buffer, size);
-    });
-}
-
-void HC12::write(const char *buffer, size_t size) {
-    data([this, buffer, &size]() {
-        softwareSerial.write(buffer, size);
-    });
-}
-
-void HC12::write(unsigned long value) {
-    data([this, &value]() {
-        for (auto i = 0; i < sizeof(unsigned long); ++i) {
-            softwareSerial.write(value >> (8u * (3 - i)));
-        }
-    });
-}
-
-template<typename Func>
-void HC12::data(Func writeCallback) {
+void HC12::dataMode() {
     digitalWrite(setPin, HIGH);
     inAtMode = false;
-
-    writeCallback();
 }
 
 void HC12::start(Baud baudRate) {
@@ -109,38 +74,16 @@ void HC12::end() {
 }
 
 int HC12::available() {
-    int available;
-
-    data([this, &available] {
-        available = softwareSerial.available();
-    });
-
-    return available;
+    dataMode();
+    return softwareSerial.available();
 }
 
 int HC12::read() {
-    int read;
-
-    data([this, &read]() {
-        read = softwareSerial.read();
-    });
-
-    return read;
+    dataMode();
+    return softwareSerial.read();
 }
 
 void HC12::flush() {
     softwareSerial.flush();
-}
-
-void HC12::print(const char *str) {
-    data([this, &str]() {
-        softwareSerial.print(str);
-    });
-}
-
-void HC12::print(const String &string) {
-    data([this, &string] {
-        softwareSerial.print(string);
-    });
 }
 

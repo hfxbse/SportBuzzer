@@ -18,6 +18,7 @@ add_executable(
         src/Wireless/Communication.cpp src/Wireless/Communication.hpp
         src/GUI/MenuEntry.cpp src/GUI/MenuEntry.hpp
         src/GUI/Stopwatch.cpp src/GUI/Stopwatch.hpp
+        src/GUI/Timer.cpp src/GUI/Timer.hpp
 )
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)

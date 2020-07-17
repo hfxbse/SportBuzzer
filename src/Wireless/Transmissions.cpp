@@ -8,7 +8,7 @@ Transmissions::Transmissions(HC12 &module) : module(module) {}
 
 void Transmissions::poll() {
     while (module.available()) {
-        if (durationTransmissionStatus != unfinished) {
+        if (durationTransmissionStatus != unfinished && limitTransmissionStatus != unfinished) {
             switch (module.read()) {
                 case Signal::ping:
                     ++receivedPingCount;
@@ -19,8 +19,8 @@ void Transmissions::poll() {
                     pingResponseTime = millis() - pingStart;
                     break;
 
-                case Signal::stopwatch:
-                    stopwatchTime = millis();
+                case Signal::cancel:
+                    ++receivedCancelCount;
                     break;
 
                 case Signal::time:
@@ -30,19 +30,35 @@ void Transmissions::poll() {
                     durationTransmissionStart = millis();
                     break;
 
-                case Signal::cancel:
-                    ++receivedCancelCount;
+                case Signal::limit:
+                    limitTransmissionStatus = unfinished;
+                    transmittedLimitBytes = 0;
+                    transmittedLimit = 0;
+                    limitTransmissionStart = millis();
+                    break;
+
+                case Signal::stopwatch:
+                    stopwatchTime = millis();
+                    break;
+
+                case Signal::timer:
+                    timerTime = millis();
                     break;
             }
-        } else {
-            ++transmittedDurationBytes;
-
-            if (transmittedDurationBytes == 4) {
-                durationTransmissionStatus = finished;
-                ++receivedDurationCount;
-            }
-
-            transmittedDuration |= static_cast<unsigned long>(module.read()) << (8u * (4 - transmittedDurationBytes));
+        } else if (durationTransmissionStatus == unfinished) {
+            transmittedDuration = writeData(
+                    transmittedDuration,
+                    transmittedDurationBytes,
+                    durationTransmissionStatus,
+                    receivedDurationCount
+            );
+        } else if (limitTransmissionStatus == unfinished) {
+            transmittedLimit = writeData(
+                    transmittedLimit,
+                    transmittedLimitBytes,
+                    limitTransmissionStatus,
+                    receivedLimitCount
+            );
         }
     }
 
@@ -52,6 +68,10 @@ void Transmissions::poll() {
 
     if (millis() - durationTransmissionStart > transmissionTimeout) {
         durationTransmissionStatus = timeout;
+    }
+
+    if (millis() - limitTransmissionStart > transmissionTimeout) {
+        limitTransmissionStatus = timeout;
     }
 }
 
@@ -109,6 +129,14 @@ unsigned long Transmissions::getStopwatchSignalTime() const {
     return stopwatchTime;
 }
 
+void Transmissions::sendTimerSignal() const {
+    module.write(static_cast<byte>(Signal::timer));
+}
+
+unsigned long Transmissions::getTimerSignalTime() const {
+    return timerTime;
+}
+
 TransmissionStatus Transmissions::getTimeTransmissionStatus() const {
     return durationTransmissionStatus;
 }
@@ -126,10 +154,40 @@ byte Transmissions::getDurationNumber() const {
     return receivedDurationCount;
 }
 
+TransmissionStatus Transmissions::getLimitTransmissionStatus() const {
+    return limitTransmissionStatus;
+}
+
+unsigned int Transmissions::getTransmittedLimit() const {
+    return transmittedLimit;
+}
+
+void Transmissions::sendLimit(unsigned long limit) const {
+    module.write(static_cast<byte>(Signal::limit));
+    module.write(limit);
+}
+
+byte Transmissions::getLimitNumber() const {
+    return receivedLimitCount;
+}
+
 void Transmissions::sendCancelSignal() const {
     module.write(static_cast<byte>(Signal::cancel));
 }
 
 byte Transmissions::getCancelNumber() const {
     return receivedCancelCount;
+}
+
+template<typename T>
+T Transmissions::writeData(T value, byte &transmittedByteCount, TransmissionStatus &status,
+                           byte &transmissionNumber) {
+    ++transmittedByteCount;
+
+    if (transmittedByteCount == sizeof(T)) {
+        status = finished;
+        ++transmissionNumber;
+    }
+
+    return value | static_cast<T>(module.read()) << (8u * (sizeof(T) - transmittedByteCount));
 }

@@ -12,9 +12,11 @@
 enum Signal {
     ping = 1,
     pong = 2,
-    stopwatch = 3,
+    cancel = 3,
     time = 4,
-    cancel = 5,
+    limit = 5,
+    stopwatch = 6,
+    timer = 7,
 };
 
 enum TransmissionStatus {
@@ -47,7 +49,11 @@ public:
 
     unsigned long getStopwatchSignalTime() const;
 
-    unsigned long transmissionTimeout = 10000;
+    void sendTimerSignal() const;
+
+    unsigned long getTimerSignalTime() const;
+
+    unsigned long transmissionTimeout = 5000;
 
     TransmissionStatus getTimeTransmissionStatus() const;
 
@@ -56,6 +62,14 @@ public:
     void sendDuration(unsigned long duration) const;
 
     byte getDurationNumber() const;
+
+    TransmissionStatus getLimitTransmissionStatus() const;
+
+    unsigned int getTransmittedLimit() const;
+
+    void sendLimit(unsigned long limit) const;
+
+    byte getLimitNumber() const;
 
     void sendCancelSignal() const;
 
@@ -72,6 +86,9 @@ private:
     // related to stopwatch signal
     unsigned long stopwatchTime = 0;
 
+    // related to timer signal
+    unsigned long timerTime = 0;
+
     // related to cancel signal
     byte receivedCancelCount = 0;
 
@@ -79,6 +96,14 @@ private:
     TransmissionStatus durationTransmissionStatus = finished;
     byte transmittedDurationBytes = 0, receivedDurationCount = 0;
     unsigned long transmittedDuration = 0, durationTransmissionStart = 0;
+
+    // related to limit transmission
+    TransmissionStatus limitTransmissionStatus = finished;
+    byte transmittedLimitBytes = 0, receivedLimitCount = 0;
+    unsigned long transmittedLimit = 0, limitTransmissionStart = 0;
+
+    template<typename T>
+    T writeData(T value, byte &transmittedByteCount, TransmissionStatus &status, byte &transmissionNumber);
 };
 
 

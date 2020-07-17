@@ -20,27 +20,32 @@ public:
     virtual ~HC12();
 
     void start(Baud baudRate);
+
     void end();
 
     bool test();
 
     bool setTransmissionBaud(Baud baud = B9600);
+
     bool setChannel(Channel channel = C001);
+
     bool setTransmissionPower(TransmissionPowerMode powerMode = TransmissionPowerMode::P8);
+
     bool restoreDefaults();
 
-    void print(const char *str);
-    void print(const String &string);
+    template<typename T>
+    void write(const T &value) {
+        dataMode();
 
-    void write(uint8_t byte);
-    void write(const char *str);
-    void write(uint8_t *buffer, size_t size);
-    void write(const char *buffer, size_t size);
-    void write(unsigned long value);
+        for (auto i = 0; i < sizeof(T); ++i) {
+            softwareSerial.write(value >> (8 * ((sizeof(T) - 1) - i)));
+        }
+    }
 
     int available();
 
     int read();
+
     void flush();
 
 private:
@@ -48,8 +53,7 @@ private:
 
     SoftwareSerial softwareSerial;
 
-    template<typename Func>
-    void data(Func writeCallback);
+    void dataMode();
 
     bool inAtMode = false;
     bool operation(const String &command, unsigned delayDuration = 50);
