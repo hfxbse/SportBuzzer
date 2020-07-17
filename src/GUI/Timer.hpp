@@ -22,12 +22,15 @@ private:
 
     bool timeLimitInput(const GUIInput &input, const Transmissions &transmissions);
 
+    void sendTimes(Transmissions &transmissions);
+
     // related to timer
     long leftTime = 0;
     long previousLeftTimeNumber;
     unsigned long buzzerTime, timerSignalTime;
-    unsigned int timeLimit = 1;
+    int timeLimit = 1;
     byte previousLimitNumber, previousCancelNumber;
+    bool limitChangeCooldown = false;
 
     // related to navigation
     bool started = false, onLimit = true, changingLimit = false;

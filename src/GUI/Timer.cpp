@@ -30,10 +30,10 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
                 if (Timer::buzzerTime > timerSignalTime) {
                     leftTime = (timeLimit * 1000) - (buzzerTime - Timer::buzzerTime);
 
-                    transmissions.sendDuration(leftTime);
-                    transmissions.sendLimit(timeLimit);
+                    sendTimes(transmissions);
                 } else {
                     transmissions.sendTimerSignal();
+                    transmissions.sendLimit(0);
                 }
 
                 redraw = Timer::buzzerTime > timerSignalTime;
@@ -56,11 +56,15 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
             // redraw with new time limit
             previousLimitNumber = transmissions.getLimitNumber();
 
-            if (!started || (started && Timer::buzzerTime < timerSignalTime)) {
+            bool ignore = limitChangeCooldown && transmissions.getTransmittedLimit() > 0;
+
+            if (!ignore && (!started || (started && Timer::buzzerTime < timerSignalTime))) {
                 timeLimit = transmissions.getTransmittedLimit();
+                timeLimit *= timeLimit < 0 ? -1 : 1;
             }
 
-            redraw = true;
+            redraw = redraw || !ignore;
+            limitChangeCooldown = false;
         }
 
         if (transmissions.getTimerSignalTime() != timerSignalTime) {
@@ -74,8 +78,7 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
 
                 leftTime = (timeLimit * 1000) - (transmissions.getTimerSignalTime() - startTime);
 
-                transmissions.sendDuration(leftTime);
-                transmissions.sendLimit(timeLimit);
+                sendTimes(transmissions);
 
                 redraw = true;
             }
@@ -215,11 +218,19 @@ bool Timer::timeLimitInput(const GUIInput &input, const Transmissions &transmiss
         if (digitOffset > 4) {
             changingLimit = false;
             timeLimit = timeLimit > 0 ? timeLimit : 1;
-            transmissions.sendLimit(timeLimit);
+            // negative value marks manual input
+            transmissions.sendLimit(timeLimit * -1);
         }
 
         return true;
     }
 
     return false;
+}
+
+void Timer::sendTimes(Transmissions &transmissions) {
+    limitChangeCooldown = true;
+
+    transmissions.sendDuration(leftTime);
+    transmissions.sendLimit(timeLimit);
 }
