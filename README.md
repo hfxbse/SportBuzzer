@@ -1,7 +1,7 @@
 # SportBuzzer
 Wireless time measurement with two buzzers, which also work as standalone.
 
-## Example Schematics
+## Schematics
 ![Imgur](https://i.imgur.com/vRQOkD1.png)
 
 The pinout can be changed as long as it follows these rules:
