@@ -34,7 +34,7 @@ the buzzer again will stop it. You can also cancel out by pressing the confirm b
 
 When in the same wireless channel and same mode, pressing either of the buzzers will stop the time.
 
-Detailed information about the usage and limits can be found in the wiki.
+Detailed information about the usage and limits can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
 ## Code
 This project uses an [Arduino CMake toolchain](https://github.com/a9183756-gh/Arduino-CMake-Toolchain/),
@@ -57,7 +57,7 @@ The basic concepts of the code are as followed:
   to its options, and time measurements. When done updating, it returns itself to keep alive, or a new
   GUITask to exit.
 
-A full documentation of the code can be found in the wiki.
+A full documentation of the code can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
 ## Info about actually displaying the GUI on a display
 As the time I am writing this, it is unclear when and how I will get access to display the GUI on an actual display. Currently, the GUI 
