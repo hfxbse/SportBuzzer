@@ -4,7 +4,7 @@ Wireless time measurement with two buzzers, which also work as standalone.
 ## Schematics
 ![Imgur](https://i.imgur.com/vRQOkD1.png)
 
-The pinout can be changed as long as it follows these rules:
+The pins on the Arduino can be changed as long as it follows these rules:
 * The buzzer needs to be connected to a pin which supports interrupts. 
   More information about interrupts can be found in the 
   [official Arduino reference](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/).
@@ -50,16 +50,15 @@ The only limitations are as follows:
 The basic concepts of the code are as followed:
 * Abstract the hardware as much as need, so you are able to change it without needing to change stuff all over
   the code base.
-* Having a main loop (`void loop(){}` to be more specific) which handles background tasks, like checking the
-  battery level, and connection status. Also update the foreground task (called `GUITask`), providing 
-  information about the hardware state it already got.
-* The GUITask has it own state, which gets destroyed when exiting the task. It handles everything related 
-  to its options, and time measurements. When done updating, it returns itself to keep alive, or a new
-  GUITask to exit.
+* Having the main loop (`void loop()` to be more specific) handling background tasks, like checking the
+  battery level, and connection status. The main loop is also updating the foreground task (called `GUITask`), 
+  providing information about the hardware state it already got.
+* A GUITask handles everything related to its options, and time measurements. When done updating, it returns 
+  itself to keep alive, or a new GUITask to exit. After exiting, its state gets destroyed.
 
 A full documentation of the code can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
 ## Info about actually displaying the GUI on a display
-As the time I am writing this, it is unclear when and how I will get access to display the GUI on an actual display. Currently, the GUI 
-is just printed over the serial interface (aka Serial Monitor).
+As the time I am writing this, it is unclear when and how I will get access to display the GUI on an actual 
+display. Currently, the GUI is just printed over the serial interface (aka the serial monitor of the Arduino IDE).
 This may change when I find the time and motivation to write an PWA for it.
