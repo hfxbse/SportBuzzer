@@ -9,7 +9,9 @@ Transmissions::Transmissions(HC12 &module) : module(module) {}
 void Transmissions::poll() {
     while (module.available()) {
         if (durationTransmissionStatus != unfinished && limitTransmissionStatus != unfinished) {
-            switch (module.read()) {
+            byte signal = module.read();
+
+            switch (signal) {
                 case Signal::ping:
                     ++receivedPingCount;
                     break;
@@ -19,15 +21,21 @@ void Transmissions::poll() {
                     pingResponseTime = millis() - pingStart;
                     break;
 
-                case Signal::cancel:
+                case Signal::cancel_stopwatch:
+                case Signal::cancel_timer:
                     ++receivedCancelCount;
+
+                    cancelSignal = static_cast<Signal>(signal);
                     break;
 
-                case Signal::time:
+                case Signal::duration_stopwatch:
+                case Signal::duration_timer:
                     durationTransmissionStatus = unfinished;
                     transmittedDurationBytes = 0;
                     transmittedDuration = 0;
                     durationTransmissionStart = millis();
+
+                    timeSignal = static_cast<Signal>(signal);
                     break;
 
                 case Signal::limit:
@@ -145,13 +153,17 @@ unsigned long Transmissions::getTransmittedDuration() const {
     return durationTransmissionStatus == finished ? transmittedDuration : 0;
 }
 
-void Transmissions::sendDuration(unsigned long duration) const {
-    module.write(static_cast<byte>(Signal::time));
+void Transmissions::sendDuration(unsigned long duration, bool stopwatch) const {
+    module.write(static_cast<byte>(stopwatch ? Signal::duration_stopwatch : Signal::duration_timer));
     module.write(duration);
 }
 
 byte Transmissions::getDurationNumber() const {
     return receivedDurationCount;
+}
+
+Signal Transmissions::getDurationSignal() const {
+    return timeSignal;
 }
 
 TransmissionStatus Transmissions::getLimitTransmissionStatus() const {
@@ -171,12 +183,16 @@ byte Transmissions::getLimitNumber() const {
     return receivedLimitCount;
 }
 
-void Transmissions::sendCancelSignal() const {
-    module.write(static_cast<byte>(Signal::cancel));
+void Transmissions::sendCancelSignal(bool stopwatch) const {
+    module.write(static_cast<byte>(stopwatch ? Signal::cancel_stopwatch : Signal::cancel_timer));
 }
 
 byte Transmissions::getCancelNumber() const {
     return receivedCancelCount;
+}
+
+Signal Transmissions::getCancelSignal() const {
+    return cancelSignal;
 }
 
 template<typename T>

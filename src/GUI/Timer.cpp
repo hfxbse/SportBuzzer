@@ -48,8 +48,10 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
             // stop timer on received duration, apply duration
             previousLeftTimeNumber = transmissions.getDurationNumber();
 
-            leftTime = static_cast<long>(transmissions.getTransmittedDuration());
-            started = false;
+            if (transmissions.getDurationSignal() == Signal::duration_timer) {
+                leftTime = static_cast<long>(transmissions.getTransmittedDuration());
+                started = false;
+            }
         }
 
         if (previousLimitNumber != transmissions.getLimitNumber()) {
@@ -87,12 +89,14 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
         }
 
         if (previousCancelNumber != transmissions.getCancelNumber()) {
-            redraw = redraw || started;
-
-            started = false;
-            leftTime = 0;
-
             previousCancelNumber = transmissions.getCancelNumber();
+
+            if (transmissions.getCancelSignal() == Signal::cancel_timer) {
+                redraw = redraw || started;
+
+                started = false;
+                leftTime = 0;
+            }
         }
         // endregion
 
@@ -104,7 +108,7 @@ GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, b
             started = false;
             leftTime = 0;
 
-            transmissions.sendCancelSignal();
+            transmissions.sendCancelSignal(false);
 
             redraw = true;
         } else if (!started) {
@@ -231,6 +235,6 @@ bool Timer::timeLimitInput(const GUIInput &input, const Transmissions &transmiss
 void Timer::sendTimes(Transmissions &transmissions) {
     limitChangeCooldown = true;
 
-    transmissions.sendDuration(leftTime);
+    transmissions.sendDuration(leftTime, false);
     transmissions.sendLimit(timeLimit);
 }

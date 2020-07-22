@@ -40,7 +40,7 @@ GUITask *Stopwatch::update(Transmissions &transmissions, unsigned long buzzerTim
                     started = false;
 
                     unsigned long duration = buzzerTime - startTime;
-                    transmissions.sendDuration(duration);
+                    transmissions.sendDuration(duration, true);
                     draw(duration);
                 } else {
                     transmissions.sendStopwatchSignal();
@@ -53,24 +53,27 @@ GUITask *Stopwatch::update(Transmissions &transmissions, unsigned long buzzerTim
                 stopwatchTime = transmissions.getStopwatchSignalTime();
 
                 unsigned long duration = stopwatchTime - startTime - transmissions.getPingResponseTime();
-                transmissions.sendDuration(duration);
+                transmissions.sendDuration(duration, true);
                 draw(duration);
             }
 
             if (transmissions.getCancelNumber() != previousCancelNumber) {
-                started = false;
                 previousCancelNumber = transmissions.getCancelNumber();
 
-                draw(0);
+                if (transmissions.getCancelSignal() == Signal::cancel_stopwatch) {
+                    started = false;
+                    draw(0);
+                }
             }
         }
 
         if (transmissions.getDurationNumber() != previousDurationNumber) {
-            // end stopwatch on received duration
-            started = false;
-            draw(transmissions.getTransmittedDuration());
-
             previousDurationNumber = transmissions.getDurationNumber();
+
+            if (transmissions.getDurationSignal() == Signal::duration_stopwatch) {
+                started = false;
+                draw(transmissions.getTransmittedDuration());
+            }
         }
 
         GUIInput input;
@@ -83,7 +86,7 @@ GUITask *Stopwatch::update(Transmissions &transmissions, unsigned long buzzerTim
                 started = false;
                 draw(0);
 
-                transmissions.sendCancelSignal();
+                transmissions.sendCancelSignal(true);
             }
         }
     }

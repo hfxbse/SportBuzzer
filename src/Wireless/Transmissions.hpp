@@ -10,13 +10,16 @@
 #include "../HardwareInterfaces/HC12.hpp"
 
 enum Signal {
+    undefined = 0,
     ping = 1,
     pong = 2,
-    cancel = 3,
-    time = 4,
-    limit = 5,
-    stopwatch = 6,
-    timer = 7,
+    cancel_stopwatch = 3,
+    cancel_timer = 4,
+    duration_stopwatch = 5,
+    duration_timer = 6,
+    limit = 7,
+    stopwatch = 8,
+    timer = 9,
 };
 
 enum TransmissionStatus {
@@ -59,9 +62,11 @@ public:
 
     unsigned long getTransmittedDuration() const;
 
-    void sendDuration(unsigned long duration) const;
+    void sendDuration(unsigned long duration, bool stopwatch) const;
 
     byte getDurationNumber() const;
+
+    Signal getDurationSignal() const;
 
     TransmissionStatus getLimitTransmissionStatus() const;
 
@@ -71,9 +76,11 @@ public:
 
     byte getLimitNumber() const;
 
-    void sendCancelSignal() const;
+    void sendCancelSignal(bool stopwatch) const;
 
     byte getCancelNumber() const;
+
+    Signal getCancelSignal() const;
 
 private:
     // related to module
@@ -91,11 +98,13 @@ private:
 
     // related to cancel signal
     byte receivedCancelCount = 0;
+    Signal cancelSignal = undefined;
 
     // related to duration transmission
     TransmissionStatus durationTransmissionStatus = finished;
     byte transmittedDurationBytes = 0, receivedDurationCount = 0;
     unsigned long transmittedDuration = 0, durationTransmissionStart = 0;
+    Signal timeSignal = Signal::undefined;
 
     // related to limit transmission
     TransmissionStatus limitTransmissionStatus = finished;
