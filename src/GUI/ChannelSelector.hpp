@@ -16,9 +16,11 @@ private:
     void draw();
 
     static inline Channel channel = C001;
-    const Channel previousChannel = channel;
+    Channel previousChannel = channel;
 
     bool onSelector = true, selecting = false;
+
+    byte digitOffset = 0;
 };
 
 #endif //SPORTBUZZER_CHANNEL_SELECTOR_HPP
