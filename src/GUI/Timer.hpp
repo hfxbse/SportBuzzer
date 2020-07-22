@@ -28,7 +28,7 @@ private:
     long leftTime = 0;
     long previousLeftTimeNumber;
     unsigned long buzzerTime, timerSignalTime;
-    int timeLimit = 1;
+    long timeLimit = 1;
     byte previousLimitNumber, previousCancelNumber;
     bool limitChangeCooldown = false;
 

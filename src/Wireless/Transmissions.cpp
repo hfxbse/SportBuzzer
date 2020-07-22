@@ -170,11 +170,11 @@ TransmissionStatus Transmissions::getLimitTransmissionStatus() const {
     return limitTransmissionStatus;
 }
 
-int Transmissions::getTransmittedLimit() const {
+long Transmissions::getTransmittedLimit() const {
     return transmittedLimit;
 }
 
-void Transmissions::sendLimit(int limit) const {
+void Transmissions::sendLimit(long limit) const {
     module.write(static_cast<byte>(Signal::limit));
     module.write(limit);
 }
