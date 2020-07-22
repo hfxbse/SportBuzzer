@@ -13,11 +13,11 @@
 #define TIMEOUT 2000
 
 namespace Connection {
-    void checkHC12Result(bool result, const String &msg);
+    void checkModuleResult(bool result, const String &msg);
 
-    void testHC12();
+    void testModule();
 
-    void setupHC12();
+    void setup();
 
     size_t handlePingSignals(Transmissions &transmissions);
 

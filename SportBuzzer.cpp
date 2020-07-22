@@ -20,8 +20,8 @@ void setup() {
         buzzerTime = millis();
     }, RISING);
 
-    Connection::testHC12();
-    Connection::setupHC12();
+    Connection::testModule();
+    Connection::setup();
 
     Connection::drawConnectionStatus(TransmissionStatus::timeout);
 }
