@@ -1,11 +1,11 @@
 # SportBuzzer
-Wireless time measurement with two buzzers, which also work as standalone.
+Wireless time measurement with two buzzer buttons, which also work as standalone.
 
 ## Schematics
-![Imgur](https://i.imgur.com/vRQOkD1.png)
+![Imgur](https://i.imgur.com/4BA6pYn.png)
 
 The pins on the Arduino can be changed as long as it follows these rules:
-* The buzzer needs to be connected to a pin which supports interrupts. 
+* The buzzer button needs to be connected to a pin which supports interrupts. 
   More information about interrupts can be found in the 
   [official Arduino reference](https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/).
 * The HC12 module's TX and RX pins need to be connected to pins which are support by the 
@@ -28,11 +28,11 @@ To change a value, you first need to navigate to the corresponding element. Then
 button to start changing the value. Use the previous button to lower the value, and use the next button
 to increase it. When done editing the value, press the confirm button again to confirm your input.
 
-While being in either the stopwatch or timer mode, pressing the buzzer will start the time, and pressing
-the buzzer again will stop it. You can also cancel out by pressing the confirm button on the cancel element. 
+While being in either the stopwatch or timer mode, pressing the buzzer button will start the time, and pressing
+the buzzer button again will stop it. You can also cancel out by pressing the confirm button on the cancel element. 
 **After canceling no result is shown.**
 
-When in the same wireless channel and same mode, pressing either of the buzzers will stop the time.
+When in the same wireless channel and same mode, pressing either of the buzzer buttons will stop the time.
 
 Detailed information about the usage and limits can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
