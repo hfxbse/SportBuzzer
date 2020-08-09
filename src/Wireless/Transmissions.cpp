@@ -171,7 +171,7 @@ TransmissionStatus Transmissions::getLimitTransmissionStatus() const {
 }
 
 long Transmissions::getTransmittedLimit() const {
-    return transmittedLimit;
+    return limitTransmissionStatus == finished ? transmittedLimit : 0;
 }
 
 void Transmissions::sendLimit(long limit) const {
