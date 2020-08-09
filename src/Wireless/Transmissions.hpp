@@ -58,7 +58,7 @@ public:
 
     unsigned long transmissionTimeout = 5000;
 
-    TransmissionStatus getTimeTransmissionStatus() const;
+    TransmissionStatus getDurationTransmissionStatus() const;
 
     unsigned long getTransmittedDuration() const;
 

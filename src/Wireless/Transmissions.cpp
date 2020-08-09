@@ -145,7 +145,7 @@ unsigned long Transmissions::getTimerSignalTime() const {
     return timerTime;
 }
 
-TransmissionStatus Transmissions::getTimeTransmissionStatus() const {
+TransmissionStatus Transmissions::getDurationTransmissionStatus() const {
     return durationTransmissionStatus;
 }
 
