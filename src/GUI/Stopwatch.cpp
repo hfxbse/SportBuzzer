@@ -97,16 +97,29 @@ GUITask *Stopwatch::update(Transmissions &transmissions, unsigned long buzzerTim
 void Stopwatch::draw(unsigned long duration) {
     Serial.println("Stopwatch");
     Serial.print("Duration: ");
+    // region draw last time recorded by stopwatch
     Serial.println(duration);
+    // endregion
 
     if (!started) {
+        // region draw info when own stopwatch is not running
         Serial.println("Press the buzzer to start.");
+
+        // --- IMPORTANT ---
+        //
+        // IF ON ANOTHER BUZZER WITHIN THE SAME WIRELESS CHANNEL HAS A STOPWATCH CURRENTLY RUNNING,
+        // PRESSING THE BUZZER WILL STOP IT REGARDLESS OF ITS OWN STATE
+        //
         Serial.println("Press either buzzer at any time to stop.");
+
         Serial.println("x  Exit");
+        // endregion
     } else {
+        // region draw info when own stopwatch is running
         Serial.println("Stopwatch is running.");
         Serial.println("Press either buzzer at any time to stop.");
         Serial.println("x  Cancel");
+        // endregion
     }
 
     Serial.println();

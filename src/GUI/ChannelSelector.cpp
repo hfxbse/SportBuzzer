@@ -81,13 +81,17 @@ void ChannelSelector::draw() {
     Serial.println("Buzzers need to be in the same channel to be able to communicate.");
 
     if (selecting) {
+        // print current position of digit which is getting modified, if the channel number is getting modified
         Serial.print(digitOffset + 1);
     } else if (onSelector) {
+        // show cursor on channel number field, but it is not getting modified
         Serial.print("x");
     } else {
+        // channel number is not getting modified and the cursor is not on the input field
         Serial.print(" ");
     }
 
+    // region print current channel, always with 3 displayed digits
     String channelString(channel);
 
     while (channelString.length() < 3) {
@@ -96,14 +100,17 @@ void ChannelSelector::draw() {
 
     Serial.print("  Current channel: ");
     Serial.println(channelString);
+    // endregion
 
-    if (!onSelector) {
+    // region draw confirm button
+    if (!onSelector) {      // cursor is on the button
         Serial.print("x");
-    } else {
+    } else {    // cursor is on not the button
         Serial.print(" ");
     }
 
     Serial.println("  OK");
+    // region
 
     Serial.println();
 }

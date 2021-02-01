@@ -144,11 +144,18 @@ void Timer::draw() {
     Serial.println(leftTime);
 
     if (!started) {
+        // draw info if own timer is not running
         Serial.println("Press the buzzer to Start");
     } else {
+        // draw info if own timer is running
         Serial.println("Timer is running.");
     }
 
+    // --- IMPORTANT ---
+    //
+    // IF ON ANOTHER BUZZER WITHIN THE SAME WIRELESS CHANNEL HAS A TIMER CURRENTLY RUNNING,
+    // PRESSING THE BUZZER WILL STOP IT REGARDLESS OF ITS OWN STATE
+    //
     Serial.println("Press either buzzer at any time to stop.");
 
     unsigned int hours = timeLimit / 3600;
@@ -156,26 +163,33 @@ void Timer::draw() {
     unsigned int seconds = timeLimit % 60;
 
     if (started) {
+        // indicate input field being disabled while the timer is running
         Serial.print("-");
     } else if (changingLimit) {
+        // print current position of digit which is getting modified, if the time limit is getting modified
         Serial.print(digitOffset + 1);
     } else if (onLimit) {
+        // show cursor on time limit field, but it is not getting modified
         Serial.print("x");
     } else {
+        // time limit is not getting modified and the cursor is not on the input field
         Serial.print(" ");
     }
 
+    // region print current time limit
     Serial.print("  Time limit: ");
     Serial.print(hours);
     Serial.print(":");
     Serial.print(getNumberString(minutes));
     Serial.print(":");
     Serial.println(getNumberString(seconds));
+    // endregion
 
+    // region draw button
     if (!started) {
-        if (onLimit) {
+        if (onLimit) {  // cursor is not on the button
             Serial.print(" ");
-        } else {
+        } else {    // cursor is on the button
             Serial.print("x");
         }
 
@@ -183,6 +197,7 @@ void Timer::draw() {
     } else {
         Serial.println("x  Cancel");
     }
+    // endregion
 
     Serial.println();
 }

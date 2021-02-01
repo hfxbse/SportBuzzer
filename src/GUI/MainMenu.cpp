@@ -40,17 +40,21 @@ GUITask *MainMenu::update(Transmissions &, unsigned long, bool redraw) {
 void MainMenu::draw() {
     Serial.println("Menu");
 
+    // region draw every menu entry
     for (const auto &menuEntry:menuEntries) {
+        // region print x in front if entry is selected
         if (menuEntry.selected) {
             Serial.print("x  ");
         } else {
             Serial.print("   ");
         }
+        // endregion
 
-        Serial.println(menuEntry.text);
+        Serial.println(menuEntry.text);     // print entry text
     }
+    // endregion
 
-    Serial.println();
+    Serial.println();   // Separator to indicate section ending in console
 }
 
 void MainMenu::previousMenuEntry() {
