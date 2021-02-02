@@ -1,3 +1,12 @@
 [submodule "Arduino-CMake-Toolchain"]
 	path = Arduino-CMake-Toolchain
 	url = https://github.com/a9183756-gh/Arduino-CMake-Toolchain.git
+[submodule "libraries/GxEPD2"]
+	path = libraries/GxEPD2
+	url = https://github.com/ZinggJM/GxEPD2.git
+[submodule "libraries/Adafruit_GFX-Library"]
+	path = libraries/Adafruit_GFX
+	url = https://github.com/adafruit/Adafruit-GFX-Library.git
+[submodule "libraries/Adafruit_BusIO"]
+	path = libraries/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO.git
