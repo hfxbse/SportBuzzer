@@ -6,7 +6,7 @@
 #define SPORTBUZZER_TRANSMISSIONS_HPP
 
 
-#include <USBAPI.h>
+#include <Arduino.h>
 #include "../HardwareInterfaces/HC12.hpp"
 
 enum Signal {

@@ -2,11 +2,11 @@
 // Created by stubit on 4/13/20.
 //
 
-#include <USBAPI.h>
+#include <Arduino.h>
 #include "HC12.hpp"
 
 HC12::HC12(const int rxPin, const int txPin, const int setPin)
-        : rxPin(rxPin), txPin(txPin), setPin(setPin), softwareSerial(SoftwareSerial(rxPin, txPin)) {
+        : setPin(setPin), softwareSerial(SoftwareSerial(rxPin, txPin)) {
     pinMode(setPin, OUTPUT);
 }
 

@@ -49,7 +49,7 @@ public:
     void flush();
 
 private:
-    const int rxPin, txPin, setPin;
+    const int setPin;
 
     SoftwareSerial softwareSerial;
 

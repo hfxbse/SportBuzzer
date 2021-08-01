@@ -1,6 +1,7 @@
 [submodule "Arduino-CMake-Toolchain"]
 	path = Arduino-CMake-Toolchain
 	url = https://github.com/a9183756-gh/Arduino-CMake-Toolchain.git
+	branch = release-1.1-dev
 [submodule "libraries/GxEPD2"]
 	path = libraries/GxEPD2
 	url = https://github.com/ZinggJM/GxEPD2.git

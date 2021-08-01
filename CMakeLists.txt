@@ -19,6 +19,7 @@ add_executable(
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Os)
 
-target_link_arduino_libraries(${PROJECT_NAME} PRIVATE core SoftwareSerial GxEPD2)
+target_link_arduino_libraries(${PROJECT_NAME} AUTO_PRIVATE)
+target_link_arduino_libraries(${PROJECT_NAME} PRIVATE GxEPD2)
 
 target_enable_arduino_upload(${PROJECT_NAME})

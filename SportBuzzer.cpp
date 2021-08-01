@@ -4,7 +4,12 @@
 #include "src/GUI/MainMenu.hpp"
 #include "src/Wireless/Connection.hpp"
 
+#ifdef __AVR
 #define BUTTON 2
+#else
+#define BUTTON PB12
+#endif
+
 #define TIMEOUT 2000
 
 volatile unsigned long buzzerTime = 0;
@@ -16,9 +21,9 @@ void setup() {
 
     pinMode(BUTTON, INPUT_PULLUP);
 
-    attachInterrupt(digitalPinToInterrupt(BUTTON), []() {
+    attachInterrupt(digitalPinToInterrupt(BUTTON), static_cast<void (*)()>([]() {
         buzzerTime = millis();
-    }, RISING);
+    }), RISING);
 
     Connection::testModule();
     Connection::setup();
