@@ -5,12 +5,14 @@
 #ifndef SPORTBUZZER_CHANNEL_SELECTOR_HPP
 #define SPORTBUZZER_CHANNEL_SELECTOR_HPP
 
-#include "../HardwareInterfaces/HC12_Options.hpp"
+#include <src/HardwareInterfaces/HC12_Options.hpp>
 #include "GUITask.hpp"
 
 class ChannelSelector : public GUITask {
 public:
-    GUITask *update(Transmissions &, unsigned long, bool redraw) override;
+    GUITask *update(const Display &display, Transmissions &, unsigned long, bool redraw) override;
+
+    static String currentChannel(Channel channel = ChannelSelector::channel);
 
 private:
     void draw();

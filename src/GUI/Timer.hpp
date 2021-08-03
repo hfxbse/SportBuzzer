@@ -11,7 +11,8 @@
 
 class Timer : public GUITask {
 public:
-    GUITask *update(Transmissions &transmissions, unsigned long buzzerTime, bool redraw) override;
+    GUITask *
+    update(const Display &display, Transmissions &transmissions, unsigned long buzzerTime, bool redraw) override;
 
 private:
     void draw();

@@ -7,7 +7,7 @@
 #include "MainMenu.hpp"
 #include "../Wireless/Connection.hpp"
 
-GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
+GUITask *ChannelSelector::update(const Display &display, Transmissions &, unsigned long, bool redraw) {
     if (redraw) {
         draw();
     } else {
@@ -21,7 +21,7 @@ GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
         } else if (input.confirm() && !selecting) {
             if (!onSelector) {
                 return new MainMenu();
-            } else if (onSelector) {
+            } else {
                 // change between navigation and channel selection
                 selecting = true;
                 digitOffset = 0;
@@ -76,6 +76,16 @@ GUITask *ChannelSelector::update(Transmissions &, unsigned long, bool redraw) {
     return this;
 }
 
+String ChannelSelector::currentChannel(Channel channel) {
+    String channelString(channel);
+
+    while (channelString.length() < 3) {
+        channelString = "0" + channelString;
+    }
+
+    return channelString;
+}
+
 void ChannelSelector::draw() {
     Serial.println("Channel selector");
     Serial.println("Buzzers need to be in the same channel to be able to communicate.");
@@ -92,11 +102,7 @@ void ChannelSelector::draw() {
     }
 
     // region print current channel, always with 3 displayed digits
-    String channelString(channel);
-
-    while (channelString.length() < 3) {
-        channelString = "0" + channelString;
-    }
+    String channelString = currentChannel();
 
     Serial.print("  Current channel: ");
     Serial.println(channelString);

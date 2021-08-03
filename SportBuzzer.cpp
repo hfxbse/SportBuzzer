@@ -1,6 +1,7 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-pass-by-value"
 
+#include <src/HardwareInterfaces/Display.hpp>
 #include "src/GUI/MainMenu.hpp"
 #include "src/Wireless/Connection.hpp"
 
@@ -27,23 +28,24 @@ void setup() {
 
     Connection::testModule();
     Connection::setup();
-
-    Connection::drawConnectionStatus(TransmissionStatus::timeout);
 }
 
 void loop() {
     static GUITask *task = new MainMenu();
     static GUITask *prevTask = nullptr;
 
-    // region update battery status
+    // region updateFull battery status
     // TODO
     // endregion
+
+    // STM32duino pin mapping not working for display
+    static Display display(1 /* A1 */ , 2 /* A2 */, 3 /* A3 */, 4 /* A4 */);
 
     static Transmissions transmissions(Connection::hc12);
     transmissions.poll();
 
     // region gui task handler
-    auto newTask = task->update(transmissions, buzzerTime, task != prevTask);
+    auto newTask = task->update(display, transmissions, buzzerTime, task != prevTask);
     if (newTask != nullptr) {
         prevTask = task;
         task = newTask;
@@ -66,6 +68,8 @@ void loop() {
 
     Connection::drawConnectionStatus(transmissions.getPingStatus());
     // endregion
+
+    display.hibernate();
 }
 
 #pragma clang diagnostic pop

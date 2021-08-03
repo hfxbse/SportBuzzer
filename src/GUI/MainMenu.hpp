@@ -17,7 +17,7 @@
 
 class MainMenu : public GUITask {
 public:
-    GUITask *update(Transmissions &, unsigned long, bool redraw) override;
+    GUITask *update(const Display &display, Transmissions &, unsigned long, bool redraw) override;
 
 private:
     void draw();

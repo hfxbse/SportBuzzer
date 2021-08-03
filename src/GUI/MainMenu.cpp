@@ -7,7 +7,7 @@
 #include "ChannelSelector.hpp"
 #include "GUIInput.hpp"
 
-GUITask *MainMenu::update(Transmissions &, unsigned long, bool redraw) {
+GUITask *MainMenu::update(const Display &display, Transmissions &, unsigned long, bool redraw) {
     if (redraw) {
         draw();
     } else {

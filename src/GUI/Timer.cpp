@@ -6,7 +6,8 @@
 #include "GUIInput.hpp"
 #include "MainMenu.hpp"
 
-GUITask *Timer::update(Transmissions &transmissions, unsigned long buzzerTime, bool redraw) {
+GUITask *Timer::update(const Display &display, Transmissions &transmissions, unsigned long buzzerTime,
+                       bool redraw) {
     if (redraw) {
         timerSignalTime = transmissions.getTimerSignalTime();
         Timer::buzzerTime = buzzerTime;
