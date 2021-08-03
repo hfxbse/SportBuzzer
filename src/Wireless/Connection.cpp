@@ -35,15 +35,17 @@ namespace Connection {
         return pingCount;
     }
 
-    void drawConnectionStatus(TransmissionStatus status) {
+    void updateConnectionStatus(TransmissionStatus status, std::function<void(bool)> draw) {
         static TransmissionStatus previousStatus = TransmissionStatus::unfinished;
 
         if (status != TransmissionStatus::unfinished && previousStatus != status) {
             previousStatus = status;
 
             if (status == TransmissionStatus::finished) {
+                draw(true);
                 Serial.println("Connected");
             } else {
+                draw(false);
                 Serial.println("Not connected");
             }
 

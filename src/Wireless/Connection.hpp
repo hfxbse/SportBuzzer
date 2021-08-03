@@ -30,7 +30,7 @@ namespace Connection {
 
     extern HC12 hc12;
 
-    void drawConnectionStatus(TransmissionStatus status);
+    void updateConnectionStatus(TransmissionStatus status, std::function<void(bool connected)> draw);
 }
 
 #endif //SPORTBUZZER_CONNECTION_HPP

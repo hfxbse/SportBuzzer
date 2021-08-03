@@ -2,6 +2,7 @@
 #pragma ide diagnostic ignored "modernize-pass-by-value"
 
 #include <src/HardwareInterfaces/Display.hpp>
+#include <src/GUI/StatusBar.hpp>
 #include "src/GUI/MainMenu.hpp"
 #include "src/Wireless/Connection.hpp"
 
@@ -66,7 +67,10 @@ void loop() {
         transmissions.sendPing(TIMEOUT);
     }
 
-    Connection::drawConnectionStatus(transmissions.getPingStatus());
+    Connection::updateConnectionStatus(transmissions.getPingStatus(), [](bool connected) {
+        drawStatusBar(display, connected, 69);
+        display.update();
+    });
     // endregion
 
     display.hibernate();
