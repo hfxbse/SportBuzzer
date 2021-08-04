@@ -6,7 +6,7 @@
 #include "MainMenu.hpp"
 #include "ChannelSelector.hpp"
 #include "GUIInput.hpp"
-#include "Roboto_Medium9pt7b.h"
+#include "src/GUI/fonts/Roboto_Medium9pt7b.h"
 
 GUITask *MainMenu::update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) {
     if (redraw) {

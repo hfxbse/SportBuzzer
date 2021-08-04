@@ -7,7 +7,7 @@
 
 #include <src/HardwareInterfaces/Display.hpp>
 #include "Options.hpp"
-#include "Roboto_Medium8pt7b.h"
+#include "src/GUI/fonts/Roboto_Medium8pt7b.h"
 
 int16_t drawNavigationBar(Display &display, const Option *options, size_t optionCount);
 

@@ -6,7 +6,7 @@
 #define SPORTBUZZER_STATUSBAR_HPP
 
 #include <src/HardwareInterfaces/Display.hpp>
-#include "Roboto_Thin7pt7b.h"
+#include "src/GUI/fonts/Roboto_Thin7pt7b.h"
 #include "ChannelSelector.hpp"
 
 uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
