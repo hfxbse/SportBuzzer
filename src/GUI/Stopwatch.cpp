@@ -7,8 +7,13 @@
 #include "MainMenu.hpp"
 #include "GUIInput.hpp"
 
-GUITask *Stopwatch::update(const Display &display, Transmissions &transmissions, unsigned long buzzerTime,
-                           bool redraw) {
+GUITask *Stopwatch::update(
+        Display &display,
+        Transmissions &transmissions,
+        unsigned long buzzerTime,
+        bool redraw,
+        uint16_t yOffset
+) {
     if (redraw) {
         Stopwatch::buzzerTime = buzzerTime;
         stopwatchTime = transmissions.getStopwatchSignalTime();

@@ -10,8 +10,13 @@
 
 class Stopwatch : public GUITask {
 public:
-    GUITask *
-    update(const Display &display, Transmissions &transmissions, unsigned long buzzerTime, bool redraw) override;
+    GUITask *update(
+            Display &display,
+            Transmissions &transmissions,
+            unsigned long buzzerTime,
+            bool redraw,
+            uint16_t yOffset
+    ) override;
 
 private:
     void draw(unsigned long duration);

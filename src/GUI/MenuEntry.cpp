@@ -4,5 +4,9 @@
 
 #include "MenuEntry.hpp"
 
-MenuEntry::MenuEntry(const String &text, GUITaskFactory taskFactory, bool selected)
+MenuEntry::MenuEntry(
+        const String &text,
+        GUITaskFactory taskFactory,
+        bool selected
+)
         : text(text), taskFactory(taskFactory), selected(selected) {}

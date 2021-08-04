@@ -10,7 +10,7 @@
 
 class ChannelSelector : public GUITask {
 public:
-    GUITask *update(const Display &display, Transmissions &, unsigned long, bool redraw) override;
+    GUITask *update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) override;
 
     static String currentChannel(Channel channel = ChannelSelector::channel);
 

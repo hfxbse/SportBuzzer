@@ -18,6 +18,17 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
     display.getTextBounds("100", &maxWidth, nullptr);
     display.getTextBounds(ChannelSelector::currentChannel(), &width, &height);
 
+    // region prepare area
+    const uint16_t lowerBound = Display::top(3 + height + 1);
+    display.drawRectangle(Display::left(0), Display::top(0), Display::right(0), lowerBound, GxEPD_WHITE);
+
+    display.drawLine(Display::left(0), lowerBound, Display::right(0), lowerBound);
+    display.drawLine(Display::left(0), Display::top(0), Display::right(0), Display::top(0));
+
+    display.drawLine(Display::left(0), Display::top(0), Display::left(0), lowerBound);
+    display.drawLine(Display::right(0), Display::top(0), Display::right(0), lowerBound);
+    // endregion draw bar border
+
     const uint16_t upperTextBound = Display::top(2) + 1;
 
     display.alignText(Display::left(1) + maxWidth, upperTextBound, width, height, TextAlign::right);
@@ -25,7 +36,6 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
     // endregion draw channel
 
     // region draw separator between channel and connection status
-    const uint16_t lowerBound = Display::top(3 + height + 1);
     const uint16_t separator = Display::left(1.25) + maxWidth + Display::left(2);
 
     display.drawLine(separator, upperTextBound, separator, upperTextBound + height + 1);
@@ -55,14 +65,6 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
     display.alignText(rightOffset - maxWidth - Display::left(2), upperTextBound - 1, width, height, TextAlign::right);
     display.print("Akku");
     // endregion
-
-    // region draw bar border
-    display.drawLine(Display::left(0), lowerBound, Display::right(0), lowerBound);
-    display.drawLine(Display::left(0), Display::top(0), Display::right(0), Display::top(0));
-
-    display.drawLine(Display::left(0), Display::top(0), Display::left(0), lowerBound);
-    display.drawLine(Display::right(0), Display::top(0), Display::right(0), lowerBound);
-    // endregion draw bar border
 
     return lowerBound - Display::top(0);
 }

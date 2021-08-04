@@ -17,19 +17,19 @@
 
 class MainMenu : public GUITask {
 public:
-    GUITask *update(const Display &display, Transmissions &, unsigned long, bool redraw) override;
+    GUITask *update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) override;
 
 private:
-    void draw();
+    void draw(Display &display, uint16_t yOffset);
 
     void previousMenuEntry();
     void nextMenuEntry();
 
     static const size_t MENU_LENGTH = 3;
     MenuEntry menuEntries[MENU_LENGTH] = {
-            MenuEntry("Stopwatch", []() -> GUITask * { return new Stopwatch(); }, true),
+            MenuEntry("Stoppuhr", []() -> GUITask * { return new Stopwatch(); }, true),
             MenuEntry("Timer", []() -> GUITask * { return new Timer(); }),
-            MenuEntry("Channel selection", []() -> GUITask * { return new ChannelSelector(); }),
+            MenuEntry("Kanalwahl", []() -> GUITask * { return new ChannelSelector(); }),
     };
 };
 

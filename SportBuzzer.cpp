@@ -35,6 +35,9 @@ void loop() {
     static GUITask *task = new MainMenu();
     static GUITask *prevTask = nullptr;
 
+    static bool connected = false;
+    static uint16_t batteryLevel = 0, barHeight = 0;
+
     // region updateFull battery status
     // TODO
     // endregion
@@ -46,7 +49,18 @@ void loop() {
     transmissions.poll();
 
     // region gui task handler
-    auto newTask = task->update(display, transmissions, buzzerTime, task != prevTask);
+    const bool redraw = task != prevTask;
+
+    if (display.getInstructionCount() == 0) {
+        barHeight = drawStatusBar(display, connected, batteryLevel);
+    }
+
+    auto newTask = task->update(display, transmissions, buzzerTime, redraw, barHeight);
+
+    if (redraw) {
+        display.updateFull();
+    }
+
     if (newTask != nullptr) {
         prevTask = task;
         task = newTask;
@@ -67,8 +81,12 @@ void loop() {
         transmissions.sendPing(TIMEOUT);
     }
 
-    Connection::updateConnectionStatus(transmissions.getPingStatus(), [](bool connected) {
-        drawStatusBar(display, connected, 69);
+    Connection::updateConnectionStatus(transmissions.getPingStatus(), [](bool c) {
+        connected = c;
+
+        barHeight = drawStatusBar(display, c, batteryLevel);
+        task->update(display, transmissions, buzzerTime, true, barHeight);
+
         display.update();
     });
     // endregion

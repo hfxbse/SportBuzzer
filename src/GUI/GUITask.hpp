@@ -10,12 +10,8 @@
 
 class GUITask {
 public:
-    virtual GUITask *update(
-            const Display &display,
-            Transmissions &transmissions,
-            unsigned long buzzerTime,
-            bool redraw
-    ) = 0;
+    virtual GUITask *
+    update(Display &display, Transmissions &transmissions, unsigned long buzzerTime, bool redraw, uint16_t yOffset) = 0;
 };
 
 #endif //SPORTBUZZER_GUI_TASK_HPP
