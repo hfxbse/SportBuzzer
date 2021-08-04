@@ -15,7 +15,7 @@ public:
                     uint16_t yOffset) override;
 
 private:
-    void draw();
+    void draw(Display &display);
 
     static String getNumberString(unsigned int number);
 

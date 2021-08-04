@@ -5,11 +5,12 @@
 #include "ChannelSelector.hpp"
 #include "GUIInput.hpp"
 #include "MainMenu.hpp"
-#include "../Wireless/Connection.hpp"
+#include <src/Wireless/Connection.hpp>
+#include "NavigationBar.hpp"
 
 GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) {
     if (redraw) {
-        draw();
+        draw(display);
     } else {
         GUIInput input;
         input.poll();
@@ -17,7 +18,8 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
         if (!selecting && (input.next() || input.previous())) {
             // navigation
             onSelector = !onSelector;
-            draw();
+            draw(display);
+            display.update();
         } else if (input.confirm() && !selecting) {
             if (!onSelector) {
                 return new MainMenu();
@@ -25,7 +27,8 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
                 // change between navigation and channel selection
                 selecting = true;
                 digitOffset = 0;
-                draw();
+                draw(display);
+                display.update();
             }
         } else if (selecting) {
             int stepSize = pow(10, digitOffset) + (digitOffset == 2);
@@ -33,10 +36,11 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
             // region change channel
             if (input.previous() && (channel / stepSize) % 10 != 0) {
                 channel = static_cast<Channel>(channel - stepSize);
-                draw();
+                draw(display);
             } else if (input.next() && (channel / stepSize) % 10 != (digitOffset != 2 ? 9 : 1)) {
                 channel = static_cast<Channel>(channel + stepSize);
-                draw();
+                draw(display);
+                display.update();
             } else if (input.confirm()) {
                 // region change digit offset
                 ++digitOffset;
@@ -51,7 +55,8 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
                     }
                 }
 
-                draw();
+                draw(display);
+                display.update();
                 // endregion
 
                 // region apply channel
@@ -86,7 +91,7 @@ String ChannelSelector::currentChannel(Channel channel) {
     return channelString;
 }
 
-void ChannelSelector::draw() {
+void ChannelSelector::draw(Display &display) {
     Serial.println("Channel selector");
     Serial.println("Buzzers need to be in the same channel to be able to communicate.");
 
@@ -100,6 +105,13 @@ void ChannelSelector::draw() {
         // channel number is not getting modified and the cursor is not on the input field
         Serial.print(" ");
     }
+
+    Option options[2] = {
+            Option("Verlassen", !onSelector),
+            Option("Wechseln", onSelector && !selecting)
+    };
+
+    drawNavigationBar(display, options, 2);
 
     // region print current channel, always with 3 displayed digits
     String channelString = currentChannel();

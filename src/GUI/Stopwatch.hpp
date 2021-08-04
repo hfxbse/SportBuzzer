@@ -19,7 +19,7 @@ public:
     ) override;
 
 private:
-    void draw(unsigned long duration);
+    void draw(Display &display, unsigned long duration);
 
     bool started = false;
     unsigned long buzzerTime, stopwatchTime;

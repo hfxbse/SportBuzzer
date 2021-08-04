@@ -5,6 +5,7 @@
 #include "Timer.hpp"
 #include "GUIInput.hpp"
 #include "MainMenu.hpp"
+#include "NavigationBar.hpp"
 
 GUITask *Timer::update(
         Display &display,
@@ -19,7 +20,7 @@ GUITask *Timer::update(
         Timer::previousLeftTimeNumber = transmissions.getDurationNumber();
         previousLimitNumber = transmissions.getLimitNumber();
         previousCancelNumber = transmissions.getCancelNumber();
-        draw();
+        draw(display);
     } else {
         // region buzzer
         if (Timer::buzzerTime != buzzerTime) {
@@ -66,7 +67,7 @@ GUITask *Timer::update(
 
             bool ignore = limitChangeCooldown && transmissions.getTransmittedLimit() > 0;
 
-            if (!ignore && (!started || (started && Timer::buzzerTime < timerSignalTime))) {
+            if (!ignore && (!started || (Timer::buzzerTime < timerSignalTime))) {
                 timeLimit = transmissions.getTransmittedLimit();
                 timeLimit *= timeLimit < 0 ? -1 : 1;
             }
@@ -135,15 +136,16 @@ GUITask *Timer::update(
         }
         // endregion
 
-        if (redraw) {
-            draw();
+        if (redraw) {   // redraw is not a forced full redraw in this case
+            draw(display);
+            display.update();
         }
     }
 
     return this;
 }
 
-void Timer::draw() {
+void Timer::draw(Display &display) {
     Serial.println("Timer");
 
     Serial.print("Time left: ");
@@ -181,6 +183,13 @@ void Timer::draw() {
         // time limit is not getting modified and the cursor is not on the input field
         Serial.print(" ");
     }
+
+    const Option options[2] = {
+            Option(started ? "Abbrechen" : "Verlassen", started || !onLimit),
+            Option("Umstellen", !started && onLimit && !changingLimit)
+    };
+
+    drawNavigationBar(display, options, 1 + !started);
 
     // region print current time limit
     Serial.print("  Time limit: ");

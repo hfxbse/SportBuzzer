@@ -9,7 +9,7 @@ Button::Button(uint8_t pin) : pin(pin) {
     previousState = digitalRead(pin);
 }
 
-bool Button::released() {   // on release rather then on pressed, to avoid bouncing
+bool Button::released() {   // on release rather than on pressed, to avoid bouncing
     bool state = digitalRead(pin);
 
     if (state != previousState) {

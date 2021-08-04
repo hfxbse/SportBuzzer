@@ -9,7 +9,7 @@
 
 
 #include "GUITask.hpp"
-#include "MenuEntry.hpp"
+#include "Options.hpp"
 #include "ChannelSelector.hpp"
 #include "Stopwatch.hpp"
 #include "Timer.hpp"

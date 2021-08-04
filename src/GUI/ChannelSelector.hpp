@@ -15,7 +15,7 @@ public:
     static String currentChannel(Channel channel = ChannelSelector::channel);
 
 private:
-    void draw();
+    void draw(Display &display);
 
     static inline Channel channel = C001;
     Channel previousChannel = channel;
