@@ -15,9 +15,7 @@ public:
                     uint16_t yOffset) override;
 
 private:
-    void draw(Display &display);
-
-    static String getNumberString(unsigned int number);
+    void draw(Display &display, uint16_t yOffset);
 
     void prepareTimerStart();
 
@@ -34,7 +32,7 @@ private:
     bool limitChangeCooldown = false;
 
     // related to navigation
-    bool started = false, onLimit = true, changingLimit = false;
+    bool started = false, onLimit = true, changingLimit = false, canceled = true;
     byte digitOffset = 0;
 };
 

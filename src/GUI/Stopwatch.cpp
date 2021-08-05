@@ -9,6 +9,7 @@
 #include "NavigationBar.hpp"
 #include "fonts/Roboto_Thin7pt7b.h"
 #include "fonts/RobotoMono_Regular11pt7b.h"
+#include "LabeledString.hpp"
 
 #define SECOND 1000
 #define MINUTE (60 * SECOND)
@@ -165,17 +166,15 @@ void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration)
     const String label = started ? "Stoppuhr gestartet" : "Letzte Zeit";
     uint16_t width, height, labelHeight;
 
-    display.setFont(Roboto_Thin7pt7b);
+    display.setFontNow(Roboto_Thin7pt7b);
     display.getTextBounds("Stoppuhr", nullptr, &labelHeight);     // get maximal label height
 
     display.setFont(RobotoMono_Regular11pt7b);
-    display.getTextBounds("00:00:00:00:000", &width, &height);
+    display.getTextBounds(getTimeString(0), &width, &height);
 
-    const uint16_t margin = Display::top(7.5, availableHeight) - Display::top(0);
+    const uint16_t margin = getMargin(7.5, availableHeight);
     const uint16_t requiredSpace = height + labelHeight + margin;
-    const uint16_t upperBound = Display::top(0) + yOffset + (
-            static_cast<float>(availableHeight - requiredSpace) / 2 + .5
-    ) - (1.5f * margin + 0.5);
+    const uint16_t upperBound = alignVertically(yOffset, availableHeight, requiredSpace) - (1.5f * margin + 0.5);
 
     display.alignText(
             Display::right(50),
@@ -186,27 +185,9 @@ void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration)
     );
 
     if (started || duration == 0) {
-        display.print("--:--:--:--:---");
+        display.print(getTimeString(duration, true));
     } else {
-        const uint16_t days = duration / (DAY);
-        duration -= DAY * days;
-
-        const uint16_t hours = duration / HOUR;
-        duration -= HOUR * hours;
-
-        const uint16_t minutes = duration / MINUTE;
-        duration -= MINUTE * minutes;
-
-        const uint16_t seconds = duration / SECOND;
-        duration -= SECOND * seconds;
-
-        display.print(
-                digits(days) + ":" +
-                digits(hours) + ":" +
-                digits(minutes) + ":" +
-                digits(seconds) + ":" +
-                digits(duration, 3)
-        );
+        display.print(getTimeString(duration));
     }
 
     display.setFont(Roboto_Thin7pt7b);

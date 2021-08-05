@@ -50,10 +50,14 @@ void Display::hibernate() {
 }
 
 void Display::setFont(const GFXfont &font) {
-    display.setFont(&font);
+    setFontNow(font);
     addDrawCallback([this, font]() {
         display.setFont(&font);
     });
+}
+
+void Display::setFontNow(const GFXfont &font) {
+    display.setFont(&font);
 }
 
 void Display::setFontColor(uint16_t color) {

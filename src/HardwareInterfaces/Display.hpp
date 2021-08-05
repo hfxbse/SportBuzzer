@@ -41,6 +41,8 @@ public:
 
     void setFont(const GFXfont &font);
 
+    void setFontNow(const GFXfont &font);
+
     void setFontColor(uint16_t color);
 
     const void getTextBounds(const String &text, uint16_t *width, uint16_t *height);

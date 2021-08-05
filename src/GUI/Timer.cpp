@@ -2,10 +2,15 @@
 // Created by stubit on 7/17/20.
 //
 
+
 #include "Timer.hpp"
 #include "GUIInput.hpp"
 #include "MainMenu.hpp"
 #include "NavigationBar.hpp"
+#include "fonts/RobotoMono_Regular11pt7b.h"
+#include "fonts/Roboto_Thin7pt7b.h"
+#include "fonts/RobotoMono_Thin7pt7b.h"
+#include "LabeledString.hpp"
 
 GUITask *Timer::update(
         Display &display,
@@ -20,13 +25,14 @@ GUITask *Timer::update(
         Timer::previousLeftTimeNumber = transmissions.getDurationNumber();
         previousLimitNumber = transmissions.getLimitNumber();
         previousCancelNumber = transmissions.getCancelNumber();
-        draw(display);
+        draw(display, yOffset);
     } else {
         // region buzzer
         if (Timer::buzzerTime != buzzerTime) {
             started = !started;
 
             if (started) {
+                canceled = false;
                 prepareTimerStart();
 
                 transmissions.sendTimerSignal();
@@ -35,7 +41,7 @@ GUITask *Timer::update(
                 redraw = true;
             } else {
                 if (Timer::buzzerTime > timerSignalTime) {
-                    leftTime = (timeLimit * 1000) - (buzzerTime - Timer::buzzerTime);
+                    leftTime = timeLimit - (buzzerTime - Timer::buzzerTime);
 
                     sendTimes(transmissions);
                 } else {
@@ -58,6 +64,7 @@ GUITask *Timer::update(
             if (transmissions.getDurationSignal() == Signal::duration_timer) {
                 leftTime = static_cast<long>(transmissions.getTransmittedDuration());
                 started = false;
+                canceled = false;
             }
         }
 
@@ -85,7 +92,7 @@ GUITask *Timer::update(
                 started = false;
                 unsigned long startTime = timerSignalTime > buzzerTime ? timerSignalTime : buzzerTime;
 
-                leftTime = (timeLimit * 1000) - (transmissions.getTimerSignalTime() - startTime);
+                leftTime = timeLimit - (transmissions.getTimerSignalTime() - startTime);
 
                 sendTimes(transmissions);
 
@@ -103,6 +110,7 @@ GUITask *Timer::update(
 
                 started = false;
                 leftTime = 0;
+                canceled = true;
             }
         }
         // endregion
@@ -114,6 +122,7 @@ GUITask *Timer::update(
         if (started && input.confirm()) {
             started = false;
             leftTime = 0;
+            canceled = true;
 
             transmissions.sendCancelSignal(false);
 
@@ -137,7 +146,7 @@ GUITask *Timer::update(
         // endregion
 
         if (redraw) {   // redraw is not a forced full redraw in this case
-            draw(display);
+            draw(display, yOffset);
             display.update();
         }
     }
@@ -145,7 +154,7 @@ GUITask *Timer::update(
     return this;
 }
 
-void Timer::draw(Display &display) {
+void Timer::draw(Display &display, uint16_t yOffset) {
     Serial.println("Timer");
 
     Serial.print("Time left: ");
@@ -166,10 +175,6 @@ void Timer::draw(Display &display) {
     //
     Serial.println("Press either buzzer at any time to stop.");
 
-    unsigned int hours = timeLimit / 3600;
-    unsigned int minutes = (timeLimit - hours * 3600) / 60;
-    unsigned int seconds = timeLimit % 60;
-
     if (started) {
         // indicate input field being disabled while the timer is running
         Serial.print("-");
@@ -189,15 +194,129 @@ void Timer::draw(Display &display) {
             Option("Umstellen", !started && onLimit && !changingLimit)
     };
 
-    drawNavigationBar(display, options, 1 + !started);
+    int16_t navigationHeight = drawNavigationBar(display, options, 1 + !started);
+
+    // region draw borders
+    display.drawLine(
+            Display::left(0),
+            Display::top(0) + yOffset,
+            Display::left(0),
+            Display::bottom(0) - navigationHeight
+    );
+
+    display.drawLine(
+            Display::right(0),
+            Display::top(0) + yOffset,
+            Display::right(0),
+            Display::bottom(0) - navigationHeight
+    );
+    // endregion draw borders
+
+    // draw labeled time
+    const uint16_t availableHeight = Display::bottom(0) - Display::top(0) - yOffset - navigationHeight;
+
+    const String label = started ? "Timer gestartet" : "Verbliebene Zeit";
+    uint16_t width, height, labelHeight, limitHeight, limitWidth;
+
+    display.setFontNow(Roboto_Thin7pt7b);
+    display.getTextBounds("Timer gestartet", nullptr, &labelHeight);     // get maximal label height
+
+    display.setFontNow(RobotoMono_Thin7pt7b);
+    display.getTextBounds(getTimeString(0), &limitWidth, &limitHeight);     // get maximal limit height
+
+    display.setFont(RobotoMono_Regular11pt7b);
+    display.getTextBounds("-" + getTimeString(0), &width, &height);
+
+    const uint16_t labelMargin = getMargin(7.5, availableHeight);
+    const uint16_t limitMargin = getMargin(15, availableHeight);
+    const uint16_t requiredSpace = height + labelHeight + limitHeight + labelMargin + limitMargin;
+
+    uint16_t upperBound = alignVertically(yOffset, availableHeight, requiredSpace);
+    upperBound -= getMargin(2.5, availableHeight);
+
+    display.alignText(
+            Display::right(50),
+            upperBound + labelHeight + labelMargin,
+            width,
+            height,
+            TextAlign::centered
+    );
+
+    if (started || canceled) {
+        display.print("-" + getTimeString(0, true));
+    } else {
+        display.print(
+                (leftTime < 0 ? "-" : "+") +
+                getTimeString(leftTime < 0 ? -1 * leftTime : leftTime)
+        );
+    }
+
+    display.setFont(Roboto_Thin7pt7b);
+    display.alignText(
+            Display::right(50),
+            upperBound,
+            width,  // use time with to get same horizontal placement
+            labelHeight,
+            TextAlign::centered
+    );
+
+    display.print(label);
+    // endregion draw labeled time
+
+    // region draw limit
+    const uint16_t leftBorder = Display::right(50) + ((static_cast<float>(width) / 2) + 0.5);
+    const uint16_t limitY = upperBound + labelMargin + labelHeight + height + limitMargin;
+
+    display.setFont(RobotoMono_Thin7pt7b);
+    display.alignText(leftBorder, limitY, limitWidth, limitHeight, TextAlign::right);
+
+    display.print(getTimeString(timeLimit));
+
+    // region draw cursor
+    if (changingLimit) {
+        const String limit = getTimeString(0);
+        byte character = digitOffset > 7 ? 4 : (digitOffset / 2);
+
+        Serial.println(character);
+
+        uint16_t displacement;
+        display.getTextBounds(limit.substring(character + digitOffset), &displacement, nullptr);
+        display.getTextBounds("0", &width, nullptr);
+
+        display.alignText(leftBorder - displacement, limitY, width, limitHeight);
+        display.setFontColor(GxEPD_WHITE);
+
+        display.drawRectangle(
+                leftBorder - displacement,
+                limitY - getMargin(2, availableHeight),
+                leftBorder - displacement + width + 1,
+                limitY + limitHeight + getMargin(2, availableHeight)
+        );
+
+        display.print(String(getTimeString(timeLimit)[character + digitOffset]));
+
+        display.setFontColor(GxEPD_BLACK);
+    }
+    // endregion draw cursor
+
+    display.setFont(Roboto_Thin7pt7b);
+    display.getTextBounds("Limit", &width, nullptr);
+
+    display.alignText(
+            leftBorder - limitWidth - Display::left(2.5),
+            limitY,
+            width,
+            limitHeight,
+            TextAlign::right
+    );
+
+    display.print("Limit");
+
+
+    // endregion draw limit
 
     // region print current time limit
-    Serial.print("  Time limit: ");
-    Serial.print(hours);
-    Serial.print(":");
-    Serial.print(getNumberString(minutes));
-    Serial.print(":");
-    Serial.println(getNumberString(seconds));
+    Serial.println("  Time limit: " + getTimeString(timeLimit));
     // endregion
 
     // region draw button
@@ -217,16 +336,6 @@ void Timer::draw(Display &display) {
     Serial.println();
 }
 
-String Timer::getNumberString(unsigned int number) {
-    String string = String(number);
-
-    while (string.length() < 2) {
-        string = "0" + string;
-    }
-
-    return string;
-}
-
 void Timer::prepareTimerStart() {
     started = true;
     changingLimit = false;
@@ -237,19 +346,61 @@ void Timer::prepareTimerStart() {
 }
 
 bool Timer::timeLimitInput(const GUIInput &input, const Transmissions &transmissions) {
-    unsigned stepSize = digitOffset % 2 ? 10 * pow(60, digitOffset / 2) : pow(60, digitOffset / 2);
-    stepSize += digitOffset >= 2 ? 1 : 0;
+    // region determine digit limits and step sizes
+    long stepSize, nextBiggerStepSize;
+    byte digitLimit = 9, upperDigitLimit = 5, lowerDigitLimit = 9;
 
+    if (digitOffset < 2) {
+        stepSize = DAY;
+        nextBiggerStepSize = DAY * 10;
+
+        upperDigitLimit = 2;
+        lowerDigitLimit = 4;
+    } else if (digitOffset < 4) {
+        stepSize = HOUR;
+        nextBiggerStepSize = DAY;
+
+        upperDigitLimit = 2;
+        lowerDigitLimit = 3;
+    } else if (digitOffset < 6) {
+        stepSize = MINUTE;
+        nextBiggerStepSize = HOUR;
+    } else if (digitOffset < 8) {
+        stepSize = SECOND;
+        nextBiggerStepSize = MINUTE;
+    } else {
+        stepSize = pow(10, 10 - digitOffset);
+        nextBiggerStepSize = pow(10, 11 - digitOffset);
+    }
+
+    long limit = timeLimit;
+    limit -= (limit / nextBiggerStepSize) * nextBiggerStepSize;
+
+    if (digitOffset < 8) {
+        if (digitOffset % 2 == 0) {
+            stepSize *= 10;
+            digitLimit = upperDigitLimit;
+        } else if (limit / (stepSize * 10) == upperDigitLimit) {
+            digitLimit = lowerDigitLimit;
+        }
+    }
+    // endregion
+
+    // region apply input while enforcing digit and absolute limits
     if (input.previous() && (timeLimit / stepSize) % 10 != 0) {
-        timeLimit -= stepSize;
-        return true;
-    } else if (input.next() && (timeLimit / stepSize) % 10 != (digitOffset % 2 ? 5 : 9)) {
-        timeLimit += stepSize;
-        return true;
+        if (timeLimit - stepSize > 0) {
+            timeLimit -= stepSize;
+            return true;
+        }
+    } else if (input.next() && (limit / stepSize) % 10 != digitLimit) {
+        if (timeLimit + stepSize > 0) {
+            timeLimit += stepSize;
+            return true;
+        }
     } else if (input.confirm()) {
         ++digitOffset;
 
-        if (digitOffset > 4) {
+        if (digitOffset >= 11) {    // all 11 digits have been focused
             changingLimit = false;
             timeLimit = timeLimit > 0 ? timeLimit : 1;
             // negative value marks manual input
@@ -258,6 +409,7 @@ bool Timer::timeLimitInput(const GUIInput &input, const Transmissions &transmiss
 
         return true;
     }
+    // endregion
 
     return false;
 }
