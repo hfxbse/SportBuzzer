@@ -161,7 +161,7 @@ void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration)
         // endregion
     }
 
-    const uint16_t availableHeight = Display::bottom(0) - Display::top(0) - navigationHeight - yOffset + 1;
+    const uint16_t availableHeight = getAvailableHeight(navigationHeight + yOffset);
 
     const String label = started ? "Stoppuhr gestartet" : "Letzte Zeit";
     uint16_t width, height, labelHeight;
@@ -174,7 +174,7 @@ void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration)
 
     const uint16_t margin = getMargin(7.5, availableHeight);
     const uint16_t requiredSpace = height + labelHeight + margin;
-    const uint16_t upperBound = alignVertically(yOffset, availableHeight, requiredSpace) - (1.5f * margin + 0.5);
+    const uint16_t upperBound = alignVertically(yOffset, availableHeight, requiredSpace) - margin;
 
     display.alignText(
             Display::right(50),

@@ -15,10 +15,10 @@ public:
     static String currentChannel(Channel channel = ChannelSelector::channel);
 
 private:
-    void draw(Display &display);
+    void draw(Display &display, uint16_t yOffset);
 
     static inline Channel channel = C001;
-    Channel previousChannel = channel;
+    Channel selectedChannel = channel;
 
     bool onSelector = true, selecting = false;
 

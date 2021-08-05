@@ -11,6 +11,7 @@
 #include "fonts/Roboto_Thin7pt7b.h"
 #include "fonts/RobotoMono_Thin7pt7b.h"
 #include "LabeledString.hpp"
+#include "NumberInput.hpp"
 
 GUITask *Timer::update(
         Display &display,
@@ -213,7 +214,7 @@ void Timer::draw(Display &display, uint16_t yOffset) {
     // endregion draw borders
 
     // draw labeled time
-    const uint16_t availableHeight = Display::bottom(0) - Display::top(0) - yOffset - navigationHeight;
+    const uint16_t availableHeight = getAvailableHeight(yOffset + navigationHeight);
 
     const String label = started ? "Timer gestartet" : "Verbliebene Zeit";
     uint16_t width, height, labelHeight, limitHeight, limitWidth;
@@ -275,27 +276,18 @@ void Timer::draw(Display &display, uint16_t yOffset) {
     // region draw cursor
     if (changingLimit) {
         const String limit = getTimeString(0);
-        byte character = digitOffset > 7 ? 4 : (digitOffset / 2);
+        byte separatorCount = digitOffset > 7 ? 4 : (digitOffset / 2);
 
-        Serial.println(character);
-
-        uint16_t displacement;
-        display.getTextBounds(limit.substring(character + digitOffset), &displacement, nullptr);
-        display.getTextBounds("0", &width, nullptr);
-
-        display.alignText(leftBorder - displacement, limitY, width, limitHeight);
-        display.setFontColor(GxEPD_WHITE);
-
-        display.drawRectangle(
-                leftBorder - displacement,
-                limitY - getMargin(2, availableHeight),
-                leftBorder - displacement + width + 1,
-                limitY + limitHeight + getMargin(2, availableHeight)
+        drawCursor(
+                display,
+                limit,
+                getTimeString(timeLimit),
+                separatorCount + digitOffset,
+                leftBorder,
+                limitHeight,
+                limitY,
+                availableHeight
         );
-
-        display.print(String(getTimeString(timeLimit)[character + digitOffset]));
-
-        display.setFontColor(GxEPD_BLACK);
     }
     // endregion draw cursor
 

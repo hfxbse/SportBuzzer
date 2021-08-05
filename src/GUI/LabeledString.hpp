@@ -12,6 +12,8 @@
 #define HOUR (60 * MINUTE)
 #define DAY (24 * HOUR)
 
+uint16_t getAvailableHeight(uint16_t offsets);
+
 uint16_t getMargin(float percentage, uint16_t availableHeight);
 
 uint16_t alignVertically(uint16_t yOffset, uint16_t availableHeight, uint16_t requiredSpace);

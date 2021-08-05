@@ -15,6 +15,10 @@ static String digits(uint16_t number, size_t min = 2) {
     return string;
 }
 
+uint16_t getAvailableHeight(uint16_t offsets) {
+    return Display::bottom(0) - Display::top(0) - offsets;
+}
+
 uint16_t getMargin(float percentage, uint16_t availableHeight) {
     return Display::top(percentage, availableHeight) - Display::top(0);
 }

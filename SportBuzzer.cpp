@@ -57,6 +57,22 @@ void loop() {
 
     auto newTask = task->update(display, transmissions, buzzerTime, redraw, barHeight);
 
+    static String channel = ChannelSelector::currentChannel();
+
+    if (channel != ChannelSelector::currentChannel()) {
+        display.drawRectangle(Display::left(0), Display::top(0), Display::right(0), barHeight, GxEPD_WHITE);
+        drawStatusBar(display, connected, batteryLevel);
+        display.update();
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
+
+        // value is updated used to prevent the screen from refreshing indefinitely
+        channel = ChannelSelector::currentChannel();
+
+#pragma clang diagnostic pop
+    }
+
     if (redraw) {
         display.updateFull();
     }
