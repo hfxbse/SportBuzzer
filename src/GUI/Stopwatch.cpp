@@ -127,38 +127,14 @@ GUITask *Stopwatch::update(
 }
 
 void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration) {
-    Serial.println("Stopwatch");
-    Serial.print("Duration: ");
-    // region draw last time recorded by stopwatch
-    Serial.println(duration);
-    // endregion
-
     uint16_t navigationHeight;
 
     if (!started) {
-        // region draw info when own stopwatch is not running
-        Serial.println("Press the buzzer to start.");
-
-        // --- IMPORTANT ---
-        //
-        // IF ON ANOTHER BUZZER WITHIN THE SAME WIRELESS CHANNEL HAS A STOPWATCH CURRENTLY RUNNING,
-        // PRESSING THE BUZZER WILL STOP IT REGARDLESS OF ITS OWN STATE
-        //
-        Serial.println("Press either buzzer at any time to stop.");
-        Serial.println("x  Exit");
-
         const Option option("Verlassen", true);
         navigationHeight = drawNavigationBar(display, &option, 1);
-        // endregion
     } else {
-        // region draw info when own stopwatch is running
-        Serial.println("Stopwatch is running.");
-        Serial.println("Press either buzzer at any time to stop.");
-        Serial.println("x  Cancel");
-
         const Option option("Abbrechen", true);
         navigationHeight = drawNavigationBar(display, &option, 1);
-        // endregion
     }
 
     const uint16_t availableHeight = getAvailableHeight(navigationHeight + yOffset);
@@ -200,8 +176,6 @@ void Stopwatch::draw(Display &display, uint16_t yOffset, unsigned long duration)
     );
 
     display.print(label);
-
-    Serial.println();
 
     display.drawLine(
             Display::right(0),

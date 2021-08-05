@@ -19,8 +19,6 @@ namespace Connection {
 
     void setup() {
         checkModuleResult(hc12.restoreDefaults(), "Unable to restore defaults on the wireless module.");
-
-        Serial.println("Setup completed on HC12.");
     }
 
     size_t handlePingSignals(Transmissions &transmissions) {
@@ -39,17 +37,15 @@ namespace Connection {
         static TransmissionStatus previousStatus = TransmissionStatus::unfinished;
 
         if (status != TransmissionStatus::unfinished && previousStatus != status) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
+
+            // value is updated used to prevent the connection status from refreshing indefinitely
             previousStatus = status;
 
-            if (status == TransmissionStatus::finished) {
-                draw(true);
-                Serial.println("Connected");
-            } else {
-                draw(false);
-                Serial.println("Not connected");
-            }
+#pragma clang diagnostic pop
 
-            Serial.println();
+            draw(status == TransmissionStatus::finished);
         }
     }
 }

@@ -41,8 +41,6 @@ GUITask *MainMenu::update(Display &display, Transmissions &, unsigned long, bool
 }
 
 void MainMenu::draw(Display &display, uint16_t yOffset) {
-    Serial.println("Menu");
-
     display.drawLine(Display::left(0), yOffset + Display::top(0), Display::left(0), Display::bottom(0));
     display.drawLine(Display::right(0), yOffset + Display::top(0), Display::right(0), Display::bottom(0));
 
@@ -51,21 +49,15 @@ void MainMenu::draw(Display &display, uint16_t yOffset) {
 
     // region draw every menu entry
     for (int i = 0; i < MENU_LENGTH; ++i) {
-        // region print x in front if entry is selected
-
         const uint16_t lineOffset = Display::top(entryHeight * (i + 1) + i, menuHeight) + yOffset;
 
         if (menuEntries[i].selected) {
-            Serial.print("x  ");
-
             const uint16_t rowStart = Display::top(entryHeight * i + i, menuHeight) + yOffset;
 
             display.drawRectangle(Display::left(0), rowStart, Display::right(0), lineOffset);
             display.setFontColor(GxEPD_WHITE);
 
         } else {
-            Serial.print("   ");
-
             display.setFontColor(GxEPD_BLACK);
 
             if (i != MENU_LENGTH - 1) {
@@ -74,9 +66,6 @@ void MainMenu::draw(Display &display, uint16_t yOffset) {
                 display.drawLine(Display::left(0), Display::bottom(0), Display::right(0), Display::bottom(0));
             }
         }
-        // endregion
-
-
 
         display.setFont(Roboto_Medium9pt7b);
 
@@ -91,12 +80,8 @@ void MainMenu::draw(Display &display, uint16_t yOffset) {
         );
 
         display.print(menuEntries[i].text);
-
-        Serial.println(menuEntries[i].text);     // print entry text
     }
     // endregion
-
-    Serial.println();   // Separator to indicate section ending in console
 }
 
 void MainMenu::previousMenuEntry() {

@@ -156,40 +156,6 @@ GUITask *Timer::update(
 }
 
 void Timer::draw(Display &display, uint16_t yOffset) {
-    Serial.println("Timer");
-
-    Serial.print("Time left: ");
-    Serial.println(leftTime);
-
-    if (!started) {
-        // draw info if own timer is not running
-        Serial.println("Press the buzzer to Start");
-    } else {
-        // draw info if own timer is running
-        Serial.println("Timer is running.");
-    }
-
-    // --- IMPORTANT ---
-    //
-    // IF ON ANOTHER BUZZER WITHIN THE SAME WIRELESS CHANNEL HAS A TIMER CURRENTLY RUNNING,
-    // PRESSING THE BUZZER WILL STOP IT REGARDLESS OF ITS OWN STATE
-    //
-    Serial.println("Press either buzzer at any time to stop.");
-
-    if (started) {
-        // indicate input field being disabled while the timer is running
-        Serial.print("-");
-    } else if (changingLimit) {
-        // print current position of digit which is getting modified, if the time limit is getting modified
-        Serial.print(digitOffset + 1);
-    } else if (onLimit) {
-        // show cursor on time limit field, but it is not getting modified
-        Serial.print("x");
-    } else {
-        // time limit is not getting modified and the cursor is not on the input field
-        Serial.print(" ");
-    }
-
     const Option options[2] = {
             Option(started ? "Abbrechen" : "Verlassen", started || !onLimit),
             Option("Umstellen", !started && onLimit && !changingLimit)
@@ -303,29 +269,8 @@ void Timer::draw(Display &display, uint16_t yOffset) {
     );
 
     display.print("Limit");
-
-
     // endregion draw limit
 
-    // region print current time limit
-    Serial.println("  Time limit: " + getTimeString(timeLimit));
-    // endregion
-
-    // region draw button
-    if (!started) {
-        if (onLimit) {  // cursor is not on the button
-            Serial.print(" ");
-        } else {    // cursor is on the button
-            Serial.print("x");
-        }
-
-        Serial.println("  Exit");
-    } else {
-        Serial.println("x  Cancel");
-    }
-    // endregion
-
-    Serial.println();
 }
 
 void Timer::prepareTimerStart() {

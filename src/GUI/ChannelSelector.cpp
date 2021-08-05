@@ -71,12 +71,9 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
 
                 if (!selecting) {
                     if (selectedChannel != channel) {
-                        Serial.println("Applying Channel");
-
                         bool success = Connection::hc12.setChannel(selectedChannel);
                         if (success) {
                             channel = selectedChannel;
-                            Serial.println();
                         } else {
                             Serial.println("ERROR: Could not apply Channel.\n");
                         }
@@ -105,20 +102,6 @@ String ChannelSelector::currentChannel(Channel channel) {
 }
 
 void ChannelSelector::draw(Display &display, uint16_t yOffset) {
-    Serial.println("Channel selector");
-    Serial.println("Buzzers need to be in the same channel to be able to communicate.");
-
-    if (selecting) {
-        // print current position of digit which is getting modified, if the channel number is getting modified
-        Serial.print(digitOffset + 1);
-    } else if (onSelector) {
-        // show cursor on channel number field, but it is not getting modified
-        Serial.print("x");
-    } else {
-        // channel number is not getting modified and the cursor is not on the input field
-        Serial.print(" ");
-    }
-
     Option options[2] = {
             Option("Verlassen", !onSelector),
             Option("Wechseln", onSelector && !selecting)
@@ -186,23 +169,4 @@ void ChannelSelector::draw(Display &display, uint16_t yOffset) {
             Display::bottom(0) - navigationHeight
     );
     // endregion
-
-    // region print current channel, always with 3 displayed digits
-    String channelString = currentChannel();
-
-    Serial.print("  Current channel: ");
-    Serial.println(channelString);
-    // endregion
-
-    // region draw confirm button
-    if (!onSelector) {      // cursor is on the button
-        Serial.print("x");
-    } else {    // cursor is on not the button
-        Serial.print(" ");
-    }
-
-    Serial.println("  OK");
-    // region
-
-    Serial.println();
 }
