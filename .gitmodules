@@ -5,9 +5,12 @@
 [submodule "libraries/GxEPD2"]
 	path = libraries/GxEPD2
 	url = https://github.com/ZinggJM/GxEPD2.git
+	branch = master
 [submodule "libraries/Adafruit_GFX-Library"]
 	path = libraries/Adafruit_GFX
 	url = https://github.com/adafruit/Adafruit-GFX-Library.git
+	branch = master
 [submodule "libraries/Adafruit_BusIO"]
 	path = libraries/Adafruit_BusIO
 	url = https://github.com/adafruit/Adafruit_BusIO.git
+    branch = master

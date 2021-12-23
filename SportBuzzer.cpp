@@ -1,15 +1,18 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "modernize-pass-by-value"
 
-#include <src/HardwareInterfaces/Display.hpp>
-#include <src/GUI/StatusBar.hpp>
+#include "src/HardwareInterfaces/Display.hpp"
+#include "src/GUI/StatusBar.hpp"
 #include "src/GUI/MainMenu.hpp"
 #include "src/Wireless/Connection.hpp"
 
 #ifdef __AVR
 #define BUTTON 2
 #else
-#define BUTTON PB12
+
+#include <variant_generic.h>
+
+#define BUTTON PB3
 #endif
 
 #define TIMEOUT 2000
@@ -42,8 +45,7 @@ void loop() {
     // TODO
     // endregion
 
-    // STM32duino pin mapping not working for display
-    static Display display(1 /* A1 */ , 2 /* A2 */, 3 /* A3 */, 4 /* A4 */);
+    static Display display(PA1, PB13, PB12, PA4);
 
     static Transmissions transmissions(Connection::hc12);
     transmissions.poll();

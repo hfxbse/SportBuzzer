@@ -12,9 +12,9 @@
 #define NEXT_BUTTON 6
 #define CONFIRM_BUTTON 7
 #else
-#define PREVIOUS_BUTTON PB13
-#define NEXT_BUTTON PB14
-#define CONFIRM_BUTTON PB15
+#define PREVIOUS_BUTTON PB4
+#define NEXT_BUTTON PB5
+#define CONFIRM_BUTTON PB6
 #endif
 
 class GUIInput {

@@ -12,9 +12,9 @@
 #define HC12_RX_PIN 11
 #define HC12_SET_PIN 9
 #else
-#define HC12_TX_PIN PA15
-#define HC12_RX_PIN PA12
-#define HC12_SET_PIN PA11
+#define HC12_TX_PIN PB10
+#define HC12_RX_PIN PB11
+#define HC12_SET_PIN PB1
 #endif
 
 #define TIMEOUT 2000
