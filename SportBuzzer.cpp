@@ -27,7 +27,9 @@ void setup() {
     pinMode(BUTTON, INPUT_PULLUP);
 
     attachInterrupt(digitalPinToInterrupt(BUTTON), static_cast<void (*)()>([]() {
-        buzzerTime = millis();
+        if (buzzerTime == 0 || millis() - buzzerTime > 100) {
+            buzzerTime = millis();
+        }
     }), RISING);
 
     Connection::testModule();
