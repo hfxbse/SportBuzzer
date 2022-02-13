@@ -10,7 +10,11 @@
 #define BUTTON 2
 #else
 
+#include <HardwareSerial.h>
 #include <variant_generic.h>
+
+HardwareSerial serial(PA10, PA9);
+#define Serial serial
 
 #define BUTTON PB3
 #endif
