@@ -20,6 +20,10 @@ HardwareSerial serial(PA10, PA9);
 #endif
 
 #define TIMEOUT 2000
+#define VOLTAGE_SAMPLES 20
+
+// 3.2V reference voltage, 10-Bit analog read resolution (values from 0 to 1023)
+#define VOLTAGE_TO_READ(voltage) voltage / 3.2f * 1023
 
 volatile unsigned long buzzerTime = 0;
 
@@ -45,16 +49,41 @@ void loop() {
     static GUITask *prevTask = nullptr;
 
     static bool connected = false;
-    static uint16_t batteryLevel = 0, barHeight = 0;
-
-    // region updateFull battery status
-    // TODO
-    // endregion
+    static uint16_t barHeight = 0;
 
     static Display display(PA1, PB13, PB12, PA4);
 
     static Transmissions transmissions(Connection::hc12);
     transmissions.poll();
+
+    // region update battery status
+    bool charging = digitalRead(PB8);
+    static uint16_t batteryLevel = !charging * 100;
+
+    unsigned long rawVoltageSum = 0;
+    for (unsigned i = 0; i < VOLTAGE_SAMPLES; ++i) {
+        rawVoltageSum += analogRead(PA6);
+    }
+
+    // Charges up to 4.2V, cuts off at 2.4V, voltage divider via a 200k and a 340k resistors to get readable values
+    // Battery voltage starts dropping rapidly after 3.2V, before that it barely sinks at all
+    // Therefore is the upper bound 2.64V and the lower bound 2.0V, adding a bit of buffer to the upper bound
+    const unsigned int battery = constrain(map(
+            rawVoltageSum,
+            VOLTAGE_TO_READ(2.00f) * VOLTAGE_SAMPLES,
+            VOLTAGE_TO_READ(2.55f) * VOLTAGE_SAMPLES,
+            0,
+            100
+    ), 0, 100);
+
+    if ((charging && batteryLevel < battery) || (!charging && batteryLevel > battery)) {
+        barHeight = drawStatusBar(display, connected, batteryLevel);
+        task->update(display, transmissions, buzzerTime, true, barHeight);
+        display.update();
+
+        batteryLevel = battery;
+    }
+    // endregion
 
     // region gui task handler
     const bool redraw = task != prevTask;
