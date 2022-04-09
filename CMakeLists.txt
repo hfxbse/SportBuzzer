@@ -17,7 +17,7 @@ add_executable(
         ${SOURCES}
 )
 
-target_compile_options(${PROJECT_NAME} PUBLIC -O3)
+add_compile_options(-O3)
 
 target_link_arduino_libraries(${PROJECT_NAME} AUTO_PRIVATE)
 target_link_arduino_libraries(${PROJECT_NAME} PRIVATE GxEPD2)
