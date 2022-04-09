@@ -17,6 +17,7 @@ add_executable(
         ${SOURCES}
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE "src")
 add_compile_options(-O3)
 
 target_link_arduino_libraries(${PROJECT_NAME} AUTO_PRIVATE)
