@@ -7,18 +7,8 @@
 namespace Connection {
     HC12 hc12(HC12_TX_PIN, HC12_RX_PIN, HC12_SET_PIN);
 
-    void checkModuleResult(bool result, const String &msg) {
-        if (!result) {
-            Serial.println(msg);
-        }
-    }
-
-    void testModule() {
-        Connection::checkModuleResult(hc12.test(), "Unable to connect to the wireless module.");
-    }
-
     void setup() {
-        checkModuleResult(hc12.restoreDefaults(), "Unable to restore defaults on the wireless module.");
+        hc12.restoreDefaults();
     }
 
     size_t handlePingSignals(Transmissions &transmissions) {

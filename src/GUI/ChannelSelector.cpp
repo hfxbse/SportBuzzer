@@ -74,8 +74,6 @@ GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned lon
                         bool success = Connection::hc12.setChannel(selectedChannel);
                         if (success) {
                             channel = selectedChannel;
-                        } else {
-                            Serial.println("ERROR: Could not apply Channel.\n");
                         }
                     } else {
                         display.update();

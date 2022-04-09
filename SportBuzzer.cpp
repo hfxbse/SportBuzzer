@@ -9,12 +9,7 @@
 #ifdef __AVR
 #define BUTTON 2
 #else
-
-#include <HardwareSerial.h>
 #include <variant_generic.h>
-
-HardwareSerial serial(PA10, PA9);
-#define Serial serial
 
 #define BUTTON PB3
 #endif
@@ -28,8 +23,6 @@ HardwareSerial serial(PA10, PA9);
 volatile unsigned long buzzerTime = 0;
 
 void setup() {
-    Serial.begin(9600);
-
     Connection::hc12.start(B9600);
 
     pinMode(BUTTON, INPUT_PULLUP);
@@ -40,7 +33,6 @@ void setup() {
         }
     }), RISING);
 
-    Connection::testModule();
     Connection::setup();
 }
 
@@ -114,16 +106,11 @@ void loop() {
         display.updateFull();
     }
 
-    if (newTask != nullptr) {
-        prevTask = task;
-        task = newTask;
+    prevTask = task;
+    task = newTask;
 
-        if (prevTask != task) {
-            delete prevTask;
-        }
-    } else {
-        Serial.println("ERROR: No next task provided after finishing the current task.");
-        Serial.println();
+    if (prevTask != task) {
+        delete prevTask;
     }
     // endregion
 

@@ -20,10 +20,6 @@
 #define TIMEOUT 2000
 
 namespace Connection {
-    void checkModuleResult(bool result, const String &msg);
-
-    void testModule();
-
     void setup();
 
     size_t handlePingSignals(Transmissions &transmissions);

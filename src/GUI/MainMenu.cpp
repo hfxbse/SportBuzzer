@@ -26,13 +26,9 @@ GUITask *MainMenu::update(Display &display, Transmissions &, unsigned long, bool
         } else if (input.confirm()) {
             for (auto &menuEntry : menuEntries) {
                 if (menuEntry.selected) {
-                    Serial.println();
                     return menuEntry.taskFactory();
                 }
             }
-
-            Serial.println("ERROR: No menu entry selected.");
-            Serial.println();
         }
         // endregion
     }
