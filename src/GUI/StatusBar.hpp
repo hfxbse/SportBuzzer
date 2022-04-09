@@ -20,6 +20,8 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
 
     // region prepare area
     const uint16_t lowerBound = Display::top(3 + height + 1);
+    const uint16_t barHeight = lowerBound - Display::top(0);
+
     display.drawRectangle(Display::left(0), Display::top(0), Display::right(0), lowerBound, GxEPD_WHITE);
 
     display.drawLine(Display::left(0), lowerBound, Display::right(0), lowerBound);
@@ -51,22 +53,39 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
     // endregion draw connection status
 
     // region draw battery level
-    const String level = String(batteryLevel) + "%";
+    const uint16_t leftOffset = Display::right(15);
+    const uint16_t rightOffset = Display::right(1) - 3;
+    const uint16_t topOffset = Display::top(15, barHeight) + 1;
+    const uint16_t bottomOffset = Display::bottom(15, barHeight);
+    const uint16_t batteryTopTopOffset = Display::top(25, barHeight) + 1;
+    const uint16_t batteryTopBottomOffset = Display::bottom(25, barHeight);
 
-    display.getTextBounds("100%", &maxWidth, nullptr);
-    display.getTextBounds(level, &width, &height);
+    display.drawRectangle(rightOffset + 1, batteryTopTopOffset, rightOffset + 2, batteryTopBottomOffset);
+    display.drawRectangle(leftOffset, topOffset, rightOffset, bottomOffset);
+    display.drawRectangle(leftOffset + 1, topOffset + 1, rightOffset - 1, bottomOffset - 1, GxEPD_WHITE);
 
-    const uint16_t rightOffset = Display::right(2) - 1;
+    display.drawLine(
+            rightOffset + 1,
+            batteryTopTopOffset + 1,
+            rightOffset + 1,
+            batteryTopBottomOffset - 1,
+            GxEPD_WHITE
+    );
 
-    display.alignText(rightOffset, upperTextBound, width, height, TextAlign::right);
-    display.print(level);
+    display.drawRectangle(
+            leftOffset + 2,
+            topOffset + 2,
+            leftOffset +
+            (constrain(batteryLevel / 5 + 1, 1, 20) * static_cast<float>(rightOffset - leftOffset - 2) / 20.0f),
+            bottomOffset - 2
+    );
 
-    display.getTextBounds("Akku", &width, &height);
-    display.alignText(rightOffset - maxWidth - Display::left(2), upperTextBound - 1, width, height, TextAlign::right);
-    display.print("Akku");
+    // ensure that there is at least one bar battery visible if it's able to power up
+    display.drawLine(leftOffset + 2, topOffset + 2, leftOffset + 2, bottomOffset - 2);
+
     // endregion
 
-    return lowerBound - Display::top(0);
+    return barHeight;
 }
 
 #endif //SPORTBUZZER_STATUSBAR_HPP
