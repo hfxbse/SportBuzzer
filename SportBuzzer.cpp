@@ -50,7 +50,7 @@ void loop() {
 
     // region update battery status
     bool charging = digitalRead(PB8);
-    static uint16_t batteryLevel = !charging * 100;
+    static int16_t batteryLevel = charging ? -1 : 100;
 
     unsigned long rawVoltageSum = 0;
     for (unsigned i = 0; i < VOLTAGE_SAMPLES; ++i) {
@@ -68,12 +68,12 @@ void loop() {
             100
     ), 0, 100);
 
-    if ((charging && batteryLevel < battery) || (!charging && batteryLevel > battery)) {
+    if ((charging && batteryLevel != -1) || (!charging && (batteryLevel > battery || batteryLevel == -1))) {
+        batteryLevel = charging ? -1 : battery;
+
         barHeight = drawStatusBar(display, connected, batteryLevel);
         task->update(display, transmissions, buzzerTime, true, barHeight);
         display.update();
-
-        batteryLevel = battery;
     }
     // endregion
 

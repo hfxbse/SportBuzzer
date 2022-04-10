@@ -53,36 +53,37 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
     // endregion draw connection status
 
     // region draw battery level
-    const uint16_t leftOffset = Display::right(15);
-    const uint16_t rightOffset = Display::right(1) - 3;
-    const uint16_t topOffset = Display::top(15, barHeight) + 1;
-    const uint16_t bottomOffset = Display::bottom(15, barHeight);
-    const uint16_t batteryTopTopOffset = Display::top(25, barHeight) + 1;
-    const uint16_t batteryTopBottomOffset = Display::bottom(25, barHeight);
+    if (batteryLevel > 0) {
+        const uint16_t leftOffset = Display::right(15);
+        const uint16_t rightOffset = Display::right(1) - 3;
+        const uint16_t topOffset = Display::top(15, barHeight) + 1;
+        const uint16_t bottomOffset = Display::bottom(15, barHeight);
+        const uint16_t batteryTopTopOffset = Display::top(25, barHeight) + 1;
+        const uint16_t batteryTopBottomOffset = Display::bottom(25, barHeight);
 
-    display.drawRectangle(rightOffset + 1, batteryTopTopOffset, rightOffset + 2, batteryTopBottomOffset);
-    display.drawRectangle(leftOffset, topOffset, rightOffset, bottomOffset);
-    display.drawRectangle(leftOffset + 1, topOffset + 1, rightOffset - 1, bottomOffset - 1, GxEPD_WHITE);
+        display.drawRectangle(rightOffset + 1, batteryTopTopOffset, rightOffset + 2, batteryTopBottomOffset);
+        display.drawRectangle(leftOffset, topOffset, rightOffset, bottomOffset);
+        display.drawRectangle(leftOffset + 1, topOffset + 1, rightOffset - 1, bottomOffset - 1, GxEPD_WHITE);
 
-    display.drawLine(
-            rightOffset + 1,
-            batteryTopTopOffset + 1,
-            rightOffset + 1,
-            batteryTopBottomOffset - 1,
-            GxEPD_WHITE
-    );
+        display.drawLine(
+                rightOffset + 1,
+                batteryTopTopOffset + 1,
+                rightOffset + 1,
+                batteryTopBottomOffset - 1,
+                GxEPD_WHITE
+        );
 
-    display.drawRectangle(
-            leftOffset + 2,
-            topOffset + 2,
-            leftOffset +
-            (constrain(batteryLevel / 5 + 1, 1, 20) * static_cast<float>(rightOffset - leftOffset - 2) / 20.0f),
-            bottomOffset - 2
-    );
+        display.drawRectangle(
+                leftOffset + 2,
+                topOffset + 2,
+                leftOffset +
+                (constrain(batteryLevel / 5 + 1, 1, 20) * static_cast<float>(rightOffset - leftOffset - 2) / 20.0f),
+                bottomOffset - 2
+        );
 
-    // ensure that there is at least one bar battery visible if it's able to power up
-    display.drawLine(leftOffset + 2, topOffset + 2, leftOffset + 2, bottomOffset - 2);
-
+        // ensure that there is at least one bar battery visible if it's able to power up
+        display.drawLine(leftOffset + 2, topOffset + 2, leftOffset + 2, bottomOffset - 2);
+    }
     // endregion
 
     return barHeight;
