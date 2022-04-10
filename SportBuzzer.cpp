@@ -50,7 +50,7 @@ void loop() {
 
     // region update battery status
     bool charging = digitalRead(PB8);
-    static int16_t batteryLevel = charging ? -1 : 100;
+    static int16_t batteryLevel = charging ? -1 : 20;
 
     unsigned long rawVoltageSum = 0;
     for (unsigned i = 0; i < VOLTAGE_SAMPLES; ++i) {
@@ -64,9 +64,9 @@ void loop() {
             rawVoltageSum,
             VOLTAGE_TO_READ(2.00f) * VOLTAGE_SAMPLES,
             VOLTAGE_TO_READ(2.55f) * VOLTAGE_SAMPLES,
-            0,
-            100
-    ), 0, 100);
+            1,
+            20
+    ), 1, 20);
 
     if ((charging && batteryLevel != -1) || (!charging && (batteryLevel > battery || batteryLevel == -1))) {
         batteryLevel = charging ? -1 : battery;

@@ -76,8 +76,7 @@ uint16_t drawStatusBar(Display &display, bool connected, int batteryLevel) {
         display.drawRectangle(
                 leftOffset + 2,
                 topOffset + 2,
-                leftOffset +
-                (constrain(batteryLevel / 5 + 1, 1, 20) * static_cast<float>(rightOffset - leftOffset - 2) / 20.0f),
+                leftOffset + (batteryLevel * static_cast<float>(rightOffset - leftOffset - 2) / 20.0f),
                 bottomOffset - 2
         );
 
