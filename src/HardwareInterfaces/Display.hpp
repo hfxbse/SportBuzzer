@@ -7,6 +7,8 @@
 
 #include <GxEPD2_BW.h>
 
+// #define DISPLAY_PANEL GxEPD2_213_B72     // Waveshare 2.13 inch b/w e-ink display v2
+#define DISPLAY_PANEL GxEPD2_213_B74    // Waveshare 2.13 inch b/w e-ink display v3
 #define DISPLAY_TOP_OVERSCAN 6
 #define DISPLAY_HEIGHT 122
 #define DISPLAY_WIDTH 250
@@ -64,7 +66,7 @@ public:
     static int16_t right(float percentage, uint16_t width = DISPLAY_WIDTH);
 
 private:
-    GxEPD2_BW<GxEPD2_213_B72, GxEPD2_213_B72::HEIGHT> display;
+    GxEPD2_BW<DISPLAY_PANEL, DISPLAY_PANEL::HEIGHT> display;
 
     // lambda functions need to capture values by value if they will get destroyed before the display update otherwise
     void addDrawCallback(std::function<void()> drawCallback);

@@ -15,7 +15,7 @@ static void startLessThanEnd(T &start, T &end) {
 }
 
 Display::Display(int busy, int rst, int dc, int cs)
-        : display(GxEPD2_213_B72(cs, dc, rst, busy)) {
+        : display(DISPLAY_PANEL(cs, dc, rst, busy)) {
     display.init();
     display.setRotation(1);
 }
