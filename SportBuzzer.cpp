@@ -20,18 +20,33 @@
 // 3.2V reference voltage, 10-Bit analog read resolution (values from 0 to 1023)
 #define VOLTAGE_TO_READ(voltage) voltage / 3.2f * 1023
 
-volatile unsigned long buzzerTime = 0;
+volatile unsigned long downTime = 0, upTime = 0;
+
+void upDetector();
+
+void downDetector() {
+    unsigned long time = millis();
+
+    if (upTime == 0 || time - upTime > 50) {
+        downTime = time;
+        attachInterrupt(digitalPinToInterrupt(BUTTON), upDetector, RISING);
+    }
+}
+
+void upDetector() {
+    upTime = millis();
+
+    if (upTime - downTime > 20) {
+        attachInterrupt(digitalPinToInterrupt(BUTTON), downDetector, FALLING);
+    }
+}
 
 void setup() {
     Connection::hc12.start(B9600);
 
     pinMode(BUTTON, INPUT_PULLUP);
 
-    attachInterrupt(digitalPinToInterrupt(BUTTON), static_cast<void (*)()>([]() {
-        if (buzzerTime == 0 || millis() - buzzerTime > 100) {
-            buzzerTime = millis();
-        }
-    }), RISING);
+    attachInterrupt(digitalPinToInterrupt(BUTTON), downDetector, FALLING);
 
     Connection::setup();
 }
@@ -72,7 +87,7 @@ void loop() {
         batteryLevel = charging ? -1 : battery;
 
         barHeight = drawStatusBar(display, connected, batteryLevel);
-        task->update(display, transmissions, buzzerTime, true, barHeight);
+        task->update(display, transmissions, downTime, true, barHeight);
         display.update();
     }
     // endregion
@@ -84,7 +99,7 @@ void loop() {
         barHeight = drawStatusBar(display, connected, batteryLevel);
     }
 
-    auto newTask = task->update(display, transmissions, buzzerTime, redraw, barHeight);
+    auto newTask = task->update(display, transmissions, downTime, redraw, barHeight);
 
     static String channel = ChannelSelector::currentChannel();
 
@@ -125,7 +140,7 @@ void loop() {
         connected = c;
 
         barHeight = drawStatusBar(display, c, batteryLevel);
-        task->update(display, transmissions, buzzerTime, true, barHeight);
+        task->update(display, transmissions, downTime, true, barHeight);
 
         display.update();
     });
