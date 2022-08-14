@@ -10,6 +10,8 @@
 
 class Stopwatch : public GUITask {
 public:
+    Stopwatch(Transmissions &transmissions, unsigned long buzzerTime);
+
     GUITask *update(
             Display &display,
             Transmissions &transmissions,

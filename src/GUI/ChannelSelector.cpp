@@ -15,74 +15,75 @@
 GUITask *ChannelSelector::update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) {
     if (redraw) {
         draw(display, yOffset);
-    } else {
-        GUIInput input;
-        input.poll();
+        return this;
+    }
 
-        if (!selecting && (input.next() || input.previous())) {
-            // navigation
-            onSelector = !onSelector;
+    GUIInput input;
+    input.poll();
+
+    if (!selecting && (input.next() || input.previous())) {
+        // navigation
+        onSelector = !onSelector;
+        draw(display, yOffset);
+        display.update();
+    } else if (input.confirm() && !selecting) {
+        if (!onSelector) {
+            return new MainMenu();
+        } else {
+            // change between navigation and channel selection
+            selecting = true;
+            digitOffset = 0;
             draw(display, yOffset);
             display.update();
-        } else if (input.confirm() && !selecting) {
-            if (!onSelector) {
-                return new MainMenu();
-            } else {
-                // change between navigation and channel selection
-                selecting = true;
-                digitOffset = 0;
-                draw(display, yOffset);
-                display.update();
-            }
-        } else if (selecting) {
-            int stepSize = pow(10, 2 - digitOffset);
+        }
+    } else if (selecting) {
+        int stepSize = pow(10, 2 - digitOffset);
 
-            // region change channel
-            if (input.previous() && (selectedChannel / stepSize) % 10 != 0) {
-                selectedChannel = static_cast<Channel>(selectedChannel - stepSize);
-                draw(display, yOffset);
-                display.update();
-            } else if (input.next() && (selectedChannel / stepSize) % 10 != (digitOffset != 0 ? 9 : 1)) {
-                selectedChannel = static_cast<Channel>(selectedChannel + stepSize);
-                draw(display, yOffset);
-                display.update();
-            } else if (input.confirm()) {
-                // region change digit offset
-                ++digitOffset;
+        // region change channel
+        if (input.previous() && (selectedChannel / stepSize) % 10 != 0) {
+            selectedChannel = static_cast<Channel>(selectedChannel - stepSize);
+            draw(display, yOffset);
+            display.update();
+        } else if (input.next() && (selectedChannel / stepSize) % 10 != (digitOffset != 0 ? 9 : 1)) {
+            selectedChannel = static_cast<Channel>(selectedChannel + stepSize);
+            draw(display, yOffset);
+            display.update();
+        } else if (input.confirm()) {
+            // region change digit offset
+            ++digitOffset;
 
-                if (digitOffset > 2) {
-                    selecting = false;
+            if (digitOffset > 2) {
+                selecting = false;
 
-                    if (selectedChannel > 100) {
-                        selectedChannel = static_cast<Channel>(100);
-                    } else if (!selectedChannel) {
-                        selectedChannel = static_cast<Channel>(1);
-                    }
+                if (selectedChannel > 100) {
+                    selectedChannel = static_cast<Channel>(100);
+                } else if (!selectedChannel) {
+                    selectedChannel = static_cast<Channel>(1);
                 }
-                // endregion
+            }
+            // endregion
 
-                draw(display, yOffset);
+            draw(display, yOffset);
 
-                // region apply channel
-                //
-                // changing channel triggers update in gui task handling
-                // therefore only force the display to update when the channel didn't change
-                //
+            // region apply channel
+            //
+            // changing channel triggers update in gui task handling
+            // therefore only force the display to update when the channel didn't change
+            //
 
-                if (!selecting) {
-                    if (selectedChannel != channel) {
-                        bool success = Connection::hc12.setChannel(selectedChannel);
-                        if (success) {
-                            channel = selectedChannel;
-                        }
-                    } else {
-                        display.update();
+            if (!selecting) {
+                if (selectedChannel != channel) {
+                    bool success = Connection::hc12.setChannel(selectedChannel);
+                    if (success) {
+                        channel = selectedChannel;
                     }
                 } else {
                     display.update();
                 }
-                // endregion
+            } else {
+                display.update();
             }
+            // endregion
         }
     }
 

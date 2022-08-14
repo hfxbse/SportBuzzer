@@ -7,8 +7,9 @@
 
 #include <WString.h>
 #include "GUITask.hpp"
+#include <src/Wireless/Transmissions.hpp>
 
-typedef GUITask *(*GUITaskFactory)();
+typedef GUITask *(*GUITaskFactory)(Transmissions &, unsigned long buzzerTime);
 
 class Option {
 public:

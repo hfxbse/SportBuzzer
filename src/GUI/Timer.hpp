@@ -11,6 +11,8 @@
 
 class Timer : public GUITask {
 public:
+    Timer(Transmissions &transmissions, unsigned long buzzerTime);
+
     GUITask *update(Display &display, Transmissions &transmissions, unsigned long buzzerTime, bool redraw,
                     uint16_t yOffset) override;
 

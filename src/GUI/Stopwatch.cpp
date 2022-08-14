@@ -16,6 +16,13 @@
 #define HOUR (60 * MINUTE)
 #define DAY (24 * HOUR)
 
+Stopwatch::Stopwatch(Transmissions &transmissions, unsigned long buzzerTime) {
+    Stopwatch::buzzerTime = buzzerTime;
+    stopwatchTime = transmissions.getStopwatchSignalTime();
+
+    previousDurationNumber = transmissions.getDurationNumber();
+    previousCancelNumber = transmissions.getCancelNumber();
+}
 
 GUITask *Stopwatch::update(
         Display &display,
@@ -25,92 +32,88 @@ GUITask *Stopwatch::update(
         uint16_t yOffset
 ) {
     if (redraw) {
-        Stopwatch::buzzerTime = buzzerTime;
-        stopwatchTime = transmissions.getStopwatchSignalTime();
-
-        previousDurationNumber = transmissions.getDurationNumber();
-        previousCancelNumber = transmissions.getCancelNumber();
         draw(display, yOffset, 0);
+        return this;
+    }
+
+    if (!started) {
+        if (Stopwatch::buzzerTime != buzzerTime) {
+            // start stopwatch on buzzer press if stopwatch
+            started = true;
+            Stopwatch::buzzerTime = buzzerTime;
+
+            transmissions.sendStopwatchSignal();
+            draw(display, yOffset, 0);
+            display.update();
+        } else if (transmissions.getStopwatchSignalTime() != stopwatchTime) {
+            // start stopwatch on stopwatch signal
+            started = true;
+            stopwatchTime = transmissions.getStopwatchSignalTime();
+
+            draw(display, yOffset, 0);
+            display.update();
+        }
     } else {
-        if (!started) {
-            if (Stopwatch::buzzerTime != buzzerTime) {
-                // start stopwatch on buzzer press if stopwatch
-                started = true;
-                Stopwatch::buzzerTime = buzzerTime;
+        unsigned long startTime = Stopwatch::buzzerTime > stopwatchTime ? Stopwatch::buzzerTime : stopwatchTime;
 
-                transmissions.sendStopwatchSignal();
-                draw(display, yOffset, 0);
-                display.update();
-            } else if (transmissions.getStopwatchSignalTime() != stopwatchTime) {
-                // start stopwatch on stopwatch signal
-                started = true;
-                stopwatchTime = transmissions.getStopwatchSignalTime();
-
-                draw(display, yOffset, 0);
-                display.update();
-            }
-        } else {
-            unsigned long startTime = Stopwatch::buzzerTime > stopwatchTime ? Stopwatch::buzzerTime : stopwatchTime;
-
-            if (Stopwatch::buzzerTime != buzzerTime) {
-                // end stopwatch on buzzer press
-                if (startTime == Stopwatch::buzzerTime) {
-                    started = false;
-
-                    unsigned long duration = buzzerTime - startTime;
-                    transmissions.sendDuration(duration, true);
-                    draw(display, yOffset, duration);
-                    display.update();
-                } else {
-                    transmissions.sendStopwatchSignal();
-                }
-
-                Stopwatch::buzzerTime = buzzerTime;
-            } else if (transmissions.getStopwatchSignalTime() != stopwatchTime) {
-                // end stopwatch on stopwatch signal
+        if (Stopwatch::buzzerTime != buzzerTime) {
+            // end stopwatch on buzzer press
+            if (startTime == Stopwatch::buzzerTime) {
                 started = false;
-                stopwatchTime = transmissions.getStopwatchSignalTime();
 
-                unsigned long duration = stopwatchTime - startTime - transmissions.getPingResponseTime();
+                unsigned long duration = buzzerTime - startTime;
                 transmissions.sendDuration(duration, true);
                 draw(display, yOffset, duration);
                 display.update();
-            }
-
-            if (transmissions.getCancelNumber() != previousCancelNumber) {
-                previousCancelNumber = transmissions.getCancelNumber();
-
-                if (transmissions.getCancelSignal() == Signal::cancel_stopwatch) {
-                    started = false;
-                    draw(display, yOffset, 0);
-                    display.update();
-                }
-            }
-        }
-
-        if (transmissions.getDurationNumber() != previousDurationNumber) {
-            previousDurationNumber = transmissions.getDurationNumber();
-
-            if (transmissions.getDurationSignal() == Signal::duration_stopwatch) {
-                started = false;
-                draw(display, yOffset, transmissions.getTransmittedDuration());
-                display.update();
-            }
-        }
-
-        GUIInput input;
-        input.poll();
-
-        if (input.confirm()) {
-            if (!started) {
-                return new MainMenu();
             } else {
+                transmissions.sendStopwatchSignal();
+            }
+
+            Stopwatch::buzzerTime = buzzerTime;
+        } else if (transmissions.getStopwatchSignalTime() != stopwatchTime) {
+            // end stopwatch on stopwatch signal
+            started = false;
+            stopwatchTime = transmissions.getStopwatchSignalTime();
+
+            unsigned long duration = stopwatchTime - startTime - transmissions.getPingResponseTime();
+            transmissions.sendDuration(duration, true);
+            draw(display, yOffset, duration);
+            display.update();
+        }
+
+        if (transmissions.getCancelNumber() != previousCancelNumber) {
+            previousCancelNumber = transmissions.getCancelNumber();
+
+            if (transmissions.getCancelSignal() == Signal::cancel_stopwatch) {
                 started = false;
                 draw(display, yOffset, 0);
                 display.update();
-
-                transmissions.sendCancelSignal(true);
             }
+        }
+    }
+
+    if (transmissions.getDurationNumber() != previousDurationNumber) {
+        previousDurationNumber = transmissions.getDurationNumber();
+
+        if (transmissions.getDurationSignal() == Signal::duration_stopwatch) {
+            started = false;
+            draw(display, yOffset, transmissions.getTransmittedDuration());
+            display.update();
+        }
+    }
+
+    GUIInput input;
+    input.poll();
+
+    if (input.confirm()) {
+        if (!started) {
+            return new MainMenu();
+        } else {
+            started = false;
+            draw(display, yOffset, 0);
+            display.update();
+
+            transmissions.sendCancelSignal(true);
         }
     }
 

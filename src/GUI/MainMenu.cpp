@@ -8,7 +8,13 @@
 #include "GUIInput.hpp"
 #include "src/GUI/fonts/Roboto_Medium9pt7b.h"
 
-GUITask *MainMenu::update(Display &display, Transmissions &, unsigned long, bool redraw, uint16_t yOffset) {
+GUITask *MainMenu::update(
+        Display &display,
+        Transmissions &transmissions,
+        unsigned long buzzerTime,
+        bool redraw,
+        uint16_t yOffset
+) {
     if (redraw) {
         draw(display, yOffset);
     } else {
@@ -24,9 +30,9 @@ GUITask *MainMenu::update(Display &display, Transmissions &, unsigned long, bool
             draw(display, yOffset);
             display.update();
         } else if (input.confirm()) {
-            for (auto &menuEntry : menuEntries) {
+            for (auto &menuEntry: menuEntries) {
                 if (menuEntry.selected) {
-                    return menuEntry.taskFactory();
+                    return menuEntry.taskFactory(transmissions, buzzerTime);
                 }
             }
         }
