@@ -32,7 +32,7 @@ GUITask *Stopwatch::update(
         uint16_t yOffset
 ) {
     if (redraw) {
-        draw(display, yOffset, 0);
+        draw(display, yOffset, started ? 0 : duration);
         return this;
     }
 
@@ -61,7 +61,7 @@ GUITask *Stopwatch::update(
             if (startTime == Stopwatch::buzzerTime) {
                 started = false;
 
-                unsigned long duration = buzzerTime - startTime;
+                duration = buzzerTime - startTime;
                 transmissions.sendDuration(duration, true);
                 draw(display, yOffset, duration);
                 display.update();
@@ -75,7 +75,7 @@ GUITask *Stopwatch::update(
             started = false;
             stopwatchTime = transmissions.getStopwatchSignalTime();
 
-            unsigned long duration = stopwatchTime - startTime - transmissions.getPingResponseTime();
+            duration = stopwatchTime - startTime - transmissions.getPingResponseTime();
             transmissions.sendDuration(duration, true);
             draw(display, yOffset, duration);
             display.update();
@@ -97,7 +97,8 @@ GUITask *Stopwatch::update(
 
         if (transmissions.getDurationSignal() == Signal::duration_stopwatch) {
             started = false;
-            draw(display, yOffset, transmissions.getTransmittedDuration());
+            duration = transmissions.getTransmittedDuration();
+            draw(display, yOffset, duration);
             display.update();
         }
     }

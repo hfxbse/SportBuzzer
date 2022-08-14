@@ -24,7 +24,7 @@ private:
     void draw(Display &display, uint16_t yOffset, unsigned long duration);
 
     bool started = false;
-    unsigned long buzzerTime, stopwatchTime;
+    unsigned long buzzerTime, stopwatchTime, duration = 0;
     byte previousDurationNumber, previousCancelNumber;
 };
 
