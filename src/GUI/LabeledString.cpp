@@ -5,7 +5,7 @@
 #include <src/HardwareInterfaces/Display.hpp>
 #include "LabeledString.hpp"
 
-static String digits(uint16_t number, size_t min = 2) {
+String digits(uint16_t number, size_t min) {
     String string = String(number);
 
     while (string.length() < min) {

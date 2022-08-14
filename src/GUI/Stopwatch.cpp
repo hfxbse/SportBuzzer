@@ -16,15 +16,6 @@
 #define HOUR (60 * MINUTE)
 #define DAY (24 * HOUR)
 
-String digits(uint16_t number, size_t min = 2) {
-    String string = String(number);
-
-    while (string.length() < min) {
-        string = "0" + string;
-    }
-
-    return string;
-}
 
 GUITask *Stopwatch::update(
         Display &display,

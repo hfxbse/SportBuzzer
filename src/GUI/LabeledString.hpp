@@ -12,6 +12,8 @@
 #define HOUR (60 * MINUTE)
 #define DAY (24 * HOUR)
 
+String digits(uint16_t number, size_t min = 2);
+
 uint16_t getAvailableHeight(uint16_t offsets);
 
 uint16_t getMargin(float percentage, uint16_t availableHeight);
