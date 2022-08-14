@@ -16,8 +16,8 @@ the buzzer button again will stop it. You can also cancel out by pressing the co
 
 When in the same wireless channel and same mode, pressing either of the buzzer buttons will stop the time.
 
-Detailed information about the usage and limits can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki)
-.
+Detailed information about the usage and limits can be found in the
+[wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
 ## Hardware
 
@@ -27,6 +27,13 @@ an HC12 long-range wireless communication module and a
 [Waveshare 2.13-inch black and white e-ink display](https://www.waveshare.com/2.13inch-e-Paper-HAT.htm). The board is
 powered via a 1000mAh LiPo battery which is charged via USB-C. The data lines of the USB-C port are connected to the
 MCU to provide expandability as well as an exposed additional UART connection on the PCB itself.
+
+**Even though this project uses an HC12 module, I highly recommend replacing it.** Not only is it practically impossible
+to find genuine modules which can deliver on the promised range, but more importantly requires the used frequency of
+433 MHz a license in large parts of the world. A promising alternative could be the
+[RYLR998 LoRa module by REYAX](https://reyax.com/products/rylr998/). It operates in a licenses free frequency range,
+should achieve an even higher range, and has a small size. As it gets also controlled via AT-commands like the HC12, the
+changes required should be small.
 
 JTAG and UART with buttons to select the boot mode are also exposed for uploading and debugging firmware.
 
