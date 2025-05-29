@@ -1,13 +1,15 @@
 # SportBuzzer
 Wireless time measurement with two buzzer buttons, which also work as standalone.
 
+![Two SportBuzzer paired showing the same stopwatch time](SportBuzzer.jpg)
+
 ## Usage
 The GUI is controlled by the three buttons, called previous, next, and confirm. Generally speaking,
 while navigating you use the previous button to go to the previous element, the next button to go to the
 next element, and press the confirm button, to leave or enter a menu.
 
 To change a value, you first need to navigate to the corresponding element. Then you press the confirm
-button to start changing the value. Use the previous button to lower the value, and use the next button
+button to start changing the value. Use the previous button to lower the value and use the next button
 to increase it. When done editing the value, press the confirm button again to confirm your input.
 
 While being in either the stopwatch or timer mode, pressing the buzzer button will start the time, and pressing
@@ -29,10 +31,10 @@ powered via a 1000mAh LiPo battery which is charged via USB-C. The data lines of
 MCU to provide expandability as well as an exposed additional UART connection on the PCB itself.
 
 **Even though this project uses an HC12 module, I highly recommend replacing it.** Not only is it practically impossible
-to find genuine modules which can deliver on the promised range, but more importantly requires the used frequency of
+to find genuine modules which can deliver on the promised range, but more importantly, requires the used frequency of
 433 MHz a license in large parts of the world. A promising alternative could be the
-[RYLR998 LoRa module by REYAX](https://reyax.com/products/rylr998/). It operates in a licenses free frequency range,
-should achieve an even higher range, and has a small size. As it gets also controlled via AT-commands like the HC12, the
+[RYLR998 LoRa module by REYAX](https://reyax.com/products/rylr998/). It operates in a license-free frequency range,
+should achieve an even higher range, and has a small size. As it gets also controlled via AT commands like the HC12, the
 changes required should be small.
 
 JTAG and UART with buttons to select the boot mode are also exposed for uploading and debugging firmware.
@@ -48,8 +50,7 @@ and ordering process a lot simpler for me. As this is a cloud-based solution, yo
 
 ![Schematics](https://image.easyeda.com/documents/00963a9f4af5407fa56a777c7bd725b1.png)
 
-The production files are also directly included in this repository
-nevertheless.
+The production files are also directly included in this repository, nevertheless.
 
 ## Code
 
@@ -64,7 +65,7 @@ The only limitations are as follows:
   directories. The starting point of those directories needs to be `src/`, so the Arduino IDE picks it up. Still, the
   Arduino IDE won't show the directories and the containing files in the Editor.
 
-The basic concepts of the code are as followed:
+The basic concepts of the code are as follows:
 
 * Abstract the hardware as much as needed, so you are able to change it without needing to change stuff all over
   the code base.
@@ -77,7 +78,7 @@ The basic concepts of the code are as followed:
 * To get accurate times without being limited by the refresh rate of the display, the buzzer is handled completely via
   interrupts. Implementations of GUITask rely on the time when the buzzer was pressed to detect if it was pressed.
 
-A full documentation of the code can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
+Full documentation of the code can be found in the [wiki](https://github.com/StuBITtv/SportBuzzer/wiki).
 
 Support from the Arduino IDE for the STM32-based microcontroller is added via the
 [stm32duino](https://github.com/stm32duino/Arduino_Core_STM32) project. The correct settings for the custom PCB are
